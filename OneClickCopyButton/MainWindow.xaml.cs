@@ -24,15 +24,30 @@ namespace OneClickCopyButton
         private bool isPinnedOnWindows = true;
 
         private SettingFileEntry settingFile;
+        private WindowSettings nowWindowSettings;
+
+        private const string SettingNameStartupLeftPosition = "StartupLeftPosition";
+        private const string SettingNameStartupTopPosition = "StartupTopPosition";
+        private const string SettingNameTopmostPinIsChecked = "TopmostPinIsChecked";
+        private const string SettingNameTransparentlyIfCursorLeftIsChecked = "TransparentlyIfCursorLeftIsChecked";
+        private const string SettingNameOpacityIfCursorLeft = "OpacityIfCursorLeft";
 
         public MainWindow()
         {
             InitializeComponent();
+            nowWindowSettings = new WindowSettings(this);
 
             bool isSuccessfulReadingSettingFile = InitialSettingFileRead();
 
-            //if (!isSuccessfulReadingSettingFile)
-                
+            if (isSuccessfulReadingSettingFile)
+                ;//TODO 기존 설정파일 읽기 성공(SettingFileEntry가 읽어낸 세팅 덧씌움)
+            else
+            {
+                nowWindowSettings.AddSetting(SettingNameStartupLeftPosition, this.Left);
+                nowWindowSettings.AddSetting(SettingNameStartupTopPosition, this.Top);
+                //nowWindowSettings.AddSetting()
+                ;//TODO 기존 설정파일이 없음(초기설정으로 세팅)
+            }
         }
 
         private bool InitialSettingFileRead()
@@ -51,8 +66,9 @@ namespace OneClickCopyButton
             {
                 settingFile = new SettingFileEntry(this, nowPath);
             }
-            catch(IOException e)
+            catch (IOException e)
             {
+                //TODO : 기존 환경설정 파일 읽기 실패시 예외처리
                 return false;
             }
 
@@ -67,13 +83,14 @@ namespace OneClickCopyButton
 
         private void isClickedForDrag(object sender, MouseEventArgs mouseEventArgs)
         {
-            if(mouseEventArgs.LeftButton == MouseButtonState.Pressed)
+            if (mouseEventArgs.LeftButton == MouseButtonState.Pressed)
                 this.DragMove();
         }
 
         private void isMouseLeave(object sender, RoutedEventArgs e)
         {
-            Opacity = 0.25;
+            if (checkboxOpacity.IsChecked.GetValueOrDefault())
+                Opacity = sliderOpacity.Value;
         }
 
         private void isMouseEnter(object sender, RoutedEventArgs e)

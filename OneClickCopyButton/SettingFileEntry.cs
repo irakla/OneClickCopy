@@ -16,6 +16,7 @@ namespace OneClickCopyButton
         private string nowExecutedDirectory;
         private string settingFilePath;
         private readonly Window userWindow;
+        private WindowSettings nowWindowSettings;
 
         public SettingFileEntry(Window userWindow, string nowExecutedDirectory)
         {
@@ -27,7 +28,8 @@ namespace OneClickCopyButton
             {
                 InitializeSettingFileContents();
             }
-            catch (IOException e) {
+            catch (IOException e)
+            {
                 string errorDetail = "?";
                 switch (e)
                 {
@@ -78,11 +80,24 @@ namespace OneClickCopyButton
             file.Close();
         }
 
+        private void MakeNewSettingFile()
+        {
+            try
+            {
+                MakeSettingFileDirectory();
+                MakeNewSettingFile();
+            }
+            catch (IOException e)
+            {
+                //TODO : 새 환경설정파일 만드는 도중 io예외발생 처리
+            }
+        }
+
         private void MakeSettingFileDirectory()
         {
             DirectoryInfo settingFileDI = new DirectoryInfo(SettingFileDirectoryPath);
-            
-            if(settingFileDI.Exists == false)
+
+            if (settingFileDI.Exists == false)
                 settingFileDI.Create();
         }
 
