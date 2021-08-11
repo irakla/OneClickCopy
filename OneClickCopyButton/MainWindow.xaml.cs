@@ -14,13 +14,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace OneClickCopyButton
+namespace OneClickCopy
 {
     /// <summary>
     /// MainWindow.xaml에 대한 상호 작용 논리
     /// </summary>
     public partial class MainWindow : Window
     {
+        private bool isChangedLocationOnScreen = false;
         private bool isPinnedOnWindows = true;
 
         private SettingFileEntry settingFile;
@@ -37,22 +38,30 @@ namespace OneClickCopyButton
             InitializeComponent();
             nowWindowSettings = new WindowSettings(this);
 
-            bool isSuccessfulReadingSettingFile = InitialSettingFileRead();
+            /*bool isSuccessfulReadingSettingFile = InitialSettingFileRead();
 
             if (isSuccessfulReadingSettingFile)
                 ;//TODO 기존 설정파일 읽기 성공(SettingFileEntry가 읽어낸 세팅 덧씌움)
             else
             {
-                nowWindowSettings.AddSetting(SettingNameStartupLeftPosition, this.Left);
-                nowWindowSettings.AddSetting(SettingNameStartupTopPosition, this.Top);
-                //nowWindowSettings.AddSetting()
+                Properties.Settings.Default.LeftOnScreen.ToString();
+                Properties.Settings.Default.
                 ;//TODO 기존 설정파일이 없음(초기설정으로 세팅)
+            }*/
+
+            bool isExistPrevSetting = Properties.Settings.Default.IsExistPrevSetting;
+            if (isExistPrevSetting){
+                Left = Properties.Settings.Default.LeftOnScreen;
+                Top = Properties.Settings.Default.TopOnScreen;
             }
+
+            Properties.Settings.Default.IsExistPrevSetting = true;
+            Properties.Settings.Default.Save();
         }
 
         private bool InitialSettingFileRead()
         {
-            setNowWindowPin();
+            SetNowWindowPin();
 
             string nowPath = System.Environment.CurrentDirectory;
 
@@ -75,35 +84,38 @@ namespace OneClickCopyButton
             return true;
         }
 
-        private void isClickedPin(object sender, RoutedEventArgs e)
+        private void IsClickedPin(object sender, RoutedEventArgs e)
         {
             isPinnedOnWindows = !isPinnedOnWindows;
-            setNowWindowPin();
+            SetNowWindowPin();
         }
 
-        private void isClickedForDrag(object sender, MouseEventArgs mouseEventArgs)
+        private void IsClickedForDrag(object sender, MouseEventArgs mouseEventArgs)
         {
             if (mouseEventArgs.LeftButton == MouseButtonState.Pressed)
+            {
                 this.DragMove();
+                ApplyLocationToProperty();
+            }
         }
 
-        private void isMouseLeave(object sender, RoutedEventArgs e)
+        private void IsMouseLeave(object sender, RoutedEventArgs e)
         {
             if (checkboxOpacity.IsChecked.GetValueOrDefault())
                 Opacity = sliderOpacity.Value;
         }
 
-        private void isMouseEnter(object sender, RoutedEventArgs e)
+        private void IsMouseEnter(object sender, RoutedEventArgs e)
         {
             Opacity = 1;
         }
 
-        private void isMouseTest(object sender, MouseEventArgs e)
+        private void IsMouseTest(object sender, MouseEventArgs e)
         {
             Console.WriteLine(e.GetPosition(this));
         }
 
-        private void setNowWindowPin()
+        private void SetNowWindowPin()
         {
             Topmost = isPinnedOnWindows;
 
@@ -113,19 +125,27 @@ namespace OneClickCopyButton
                 pinEdge.Visibility = Visibility.Hidden;
         }
 
-        private void CommandBinding_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+
+        private void NotifyIsChangedLocationOnScreen(object sender, EventArgs changedEvent) => isChangedLocationOnScreen = true;
+
+        private void ApplyLocationToProperty()
         {
-            e.CanExecute = true;
+            if (isChangedLocationOnScreen)
+            {
+                Properties.Settings.Default.LeftOnScreen = Left;
+                Properties.Settings.Default.TopOnScreen = Top;
+
+                Console.WriteLine(Properties.Settings.Default.LeftOnScreen + ", " + Properties.Settings.Default.TopOnScreen);
+                Properties.Settings.Default.Save();
+
+                isChangedLocationOnScreen = false;
+            }
         }
 
-        private void CommandBinding_CloseWindow(object sender, ExecutedRoutedEventArgs e)
-        {
-            SystemCommands.CloseWindow(this);
-        }
+        private void CommandBinding_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
 
-        private void CommandBinding_MinimizeWindow(object sender, ExecutedRoutedEventArgs e)
-        {
-            SystemCommands.MinimizeWindow(this);
-        }
+        private void CommandBinding_CloseWindow(object sender, ExecutedRoutedEventArgs e) => SystemCommands.CloseWindow(this);
+
+        private void CommandBinding_MinimizeWindow(object sender, ExecutedRoutedEventArgs e) => SystemCommands.MinimizeWindow(this);
     }
 }

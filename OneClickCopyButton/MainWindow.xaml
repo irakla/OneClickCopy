@@ -1,14 +1,15 @@
-﻿<Window x:Class="OneClickCopyButton.MainWindow"
+﻿<Window x:Class="OneClickCopy.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:OneClickCopyButton"
+        xmlns:local="clr-namespace:OneClickCopy"
         mc:Ignorable="d"
         Title="OneClickCopy" ResizeMode="CanMinimize" Width="Auto"
         WindowStyle="None" AllowsTransparency="True"
         WindowStartupLocation="CenterScreen"
-        MouseDown="isClickedForDrag" MouseLeave="isMouseLeave" MouseEnter="isMouseEnter">
+        MouseDown="IsClickedForDrag" MouseLeave="IsMouseLeave" MouseEnter="IsMouseEnter"
+        LocationChanged="NotifyIsChangedLocationOnScreen">
     <Window.CommandBindings>
         <CommandBinding Command="{x:Static SystemCommands.CloseWindowCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_CloseWindow" />
         <CommandBinding Command="{x:Static SystemCommands.MinimizeWindowCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_MinimizeWindow" />
@@ -17,7 +18,7 @@
         <DockPanel>
             <Border Name="titleArea" DockPanel.Dock="Top" Height="32" BorderBrush="LightGray" BorderThickness="0.5">
                 <Grid>
-                    <Label VerticalContentAlignment="Center" Margin="0,0,10,0" MouseDown="isClickedForDrag">
+                    <Label VerticalContentAlignment="Center" Margin="0,0,10,0" MouseDown="IsClickedForDrag">
                         <TextBlock Text="{Binding Title, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}"/>
                     </Label>
 
@@ -78,7 +79,7 @@
                                 StrokeThickness="0.75"/>
                         </Button>
 
-                        <Button Margin="0,0,70,0" Click="isClickedPin">
+                        <Button Margin="0,0,70,0" Click="IsClickedPin">
                             <Button.Style>
                                 <Style TargetType="Button" BasedOn="{StaticResource systemButton}">
                                     <Style.Triggers>
