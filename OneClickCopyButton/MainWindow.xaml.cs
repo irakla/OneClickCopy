@@ -30,6 +30,18 @@ namespace OneClickCopy
         private SettingsFileEntry settingsFileEntry;
         private MainWindowSettingsController mainWindowSettingsController;
 
+        public Point NowPositionOnScreen
+        {
+            get => new Point(Left, Top);
+            set
+            {
+                Left = value.X;
+                Top = value.Y;
+
+                mainWindowSettingsController.SetNewPositionOnScreen(value);
+            }
+        }
+
         public bool TopmostButtonIsPinned
         {
             get => isPinnedTopmostButton;
@@ -38,13 +50,19 @@ namespace OneClickCopy
                 isPinnedTopmostButton = value;
                 Topmost = value;
                 UpdatePinEdgeVisiblity();
+
+                mainWindowSettingsController.SetTopmostState(value);
             }
         }
 
         public bool CanBeTransparent
         {
             get => checkboxCanBeTransparent.IsChecked != null && (bool)checkboxCanBeTransparent.IsChecked;
-            set => checkboxCanBeTransparent.IsChecked = value;
+            set
+            {
+                checkboxCanBeTransparent.IsChecked = value;
+                mainWindowSettingsController.SetCanBeTransparent(value);
+            }
         }
 
         public double OpacityAtMouseLeaving
@@ -58,6 +76,8 @@ namespace OneClickCopy
                     sliderOpacityAtMouseLeaving.Value = 0;
                 else
                     sliderOpacityAtMouseLeaving.Value = value;
+
+                mainWindowSettingsController.SetOpacityAtMouseLeaving(value);
             }
         }
 
@@ -124,13 +144,13 @@ namespace OneClickCopy
 
         private void IsClickedTopmostButton(object sender, RoutedEventArgs e)
         {
-            isPinnedTopmostButton = !isPinnedTopmostButton;
-            mainWindowSettingsController.SetTopmostState(isPinnedTopmostButton);
+            TopmostButtonIsPinned = !TopmostButtonIsPinned;
         }
 
         private void IsToggledCheckBoxCanBeTransparent(object sender, RoutedEventArgs e)
         {
-            mainWindowSettingsController.SetCanBeTransparent(CanBeTransparent);
+            if(checkboxCanBeTransparent.IsChecked != null)
+                CanBeTransparent = (bool)checkboxCanBeTransparent.IsChecked;
         }
 
         private void IsMouseLeave(object sender, RoutedEventArgs e)
@@ -163,13 +183,13 @@ namespace OneClickCopy
 
         private void IsFixedOpacitySlide(object sender, RoutedEventArgs e)
         {
-            mainWindowSettingsController.SetOpacityAtMouseLeaving(OpacityAtMouseLeaving);
+            OpacityAtMouseLeaving = sliderOpacityAtMouseLeaving.Value;
         }
 
         private void IsFixedOpacitySlideByKey(object sender, KeyEventArgs e)
         {
             if(e.Key == Key.Left || e.Key == Key.Right)
-                mainWindowSettingsController.SetOpacityAtMouseLeaving(OpacityAtMouseLeaving);
+                OpacityAtMouseLeaving = sliderOpacityAtMouseLeaving.Value;
         }
 
         private void NotifyIsChangedLocationOnScreen(object sender, EventArgs changedEvent) => isChangedLocationOnScreen = true;
@@ -178,8 +198,7 @@ namespace OneClickCopy
         {
             if (isChangedLocationOnScreen)
             {
-                mainWindowSettingsController.MoveLeftOnScreen(Left);
-                mainWindowSettingsController.MoveTopOnScreen(Top);
+                NowPositionOnScreen = new Point(Left, Top);
 
                 isChangedLocationOnScreen = false;
             }

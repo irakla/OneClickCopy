@@ -26,6 +26,12 @@ namespace OneClickCopy
         private MainWindow targetWindow;
         private bool isActivatedBatchSave = false;
 
+        public Configuration TargetWindowSettings
+        { get => targetWindowSettings; set => targetWindowSettings = value; }
+
+        public double DefaultLeftOnScreen { get => defaultLeftOnScreen; set => defaultLeftOnScreen = value; }
+        public double DefaultTopOnScreen { get => defaultTopOnScreen; set => defaultTopOnScreen = value; }
+
         public MainWindowSettingsController(MainWindow targetWindow, Configuration initialSettings)
         {
             this.targetWindow = targetWindow;
@@ -41,13 +47,6 @@ namespace OneClickCopy
         {
             get => targetWindowSettings != null;
         }
-
-        public Configuration TargetWindowSettings 
-        { get => targetWindowSettings; set => targetWindowSettings = value; }
-
-        public double DefaultLeftOnScreen { get => defaultLeftOnScreen; set => defaultLeftOnScreen = value; }
-        public double DefaultTopOnScreen { get => defaultTopOnScreen; set => defaultTopOnScreen = value; }
-        
 
         private KeyValueConfigurationCollection NowSettingsCollection
         {
@@ -82,10 +81,20 @@ namespace OneClickCopy
                 targetWindowSettings.Save(ConfigurationSaveMode.Modified);
         }
 
+        public void SetNewPositionOnScreen(Point newPointOnScreen)
+        {
+            if (IsLoadedWindowSettings)
+            {
+                NowSettingsCollection[SettingKeyLeftOnScreen].Value = newPointOnScreen.X.ToString();
+                NowSettingsCollection[SettingKeyTopOnScreen].Value = newPointOnScreen.Y.ToString();
+            }
+
+            if (!isActivatedBatchSave)
+                targetWindowSettings.Save(ConfigurationSaveMode.Modified);
+        }
+
         public void SetTopmostState(bool stateIsPinned)
         {
-            targetWindow.TopmostButtonIsPinned = stateIsPinned;
-
             if (IsLoadedWindowSettings)
                 NowSettingsCollection[SettingKeyTopmostPinState].Value = stateIsPinned.ToString();
 
@@ -95,8 +104,6 @@ namespace OneClickCopy
 
         public void SetCanBeTransparent(bool stateCanBeTransParent)
         {
-            targetWindow.CanBeTransparent = stateCanBeTransParent;
-
             if (IsLoadedWindowSettings)
                 NowSettingsCollection[SettingKeyCanBeTransparent].Value = stateCanBeTransParent.ToString();
 
@@ -106,8 +113,6 @@ namespace OneClickCopy
 
         public void SetOpacityAtMouseLeaving(double newOpacity)
         {
-            targetWindow.OpacityAtMouseLeaving = newOpacity;
-
             if (IsLoadedWindowSettings)
                 NowSettingsCollection[SettingKeyOpacityAtMouseLeaving].Value = newOpacity.ToString();
 
@@ -118,24 +123,22 @@ namespace OneClickCopy
         public void ApplyAllCurrentSettings()
         {
             double? settingLeftOnScreen = GetNullableDoubleSetting(SettingKeyLeftOnScreen, defaultLeftOnScreen);
-            if (settingLeftOnScreen != null)
-                MoveLeftOnScreen((double)settingLeftOnScreen);
-
             double? settingTopOnScreen = GetNullableDoubleSetting(SettingKeyTopOnScreen, defaultTopOnScreen);
-            if (settingTopOnScreen != null)
-                MoveTopOnScreen((double)settingTopOnScreen);
+            if (settingLeftOnScreen != null && settingTopOnScreen != null)
+                targetWindow.NowPositionOnScreen 
+                    = new Point((double)settingLeftOnScreen, (double)settingTopOnScreen);
 
             bool? settingTopmostState = GetNullableBoolSetting(SettingKeyTopmostPinState, defaultTopmostPinState);
             if (settingTopmostState != null)
-                SetTopmostState((bool)settingTopmostState);
+                targetWindow.TopmostButtonIsPinned = (bool)settingTopmostState;
 
             bool? settingCanBeTransparent = GetNullableBoolSetting(SettingKeyCanBeTransparent, defaultCanBeTransparent);
             if (settingCanBeTransparent != null)
-                SetCanBeTransparent((bool)settingCanBeTransparent);
+                targetWindow.CanBeTransparent = (bool)settingCanBeTransparent;
 
             double? settingOpacityAtMouseLeaving = GetNullableDoubleSetting(SettingKeyOpacityAtMouseLeaving, defaultOpacityAtMouseLeaving);
             if (settingOpacityAtMouseLeaving != null)
-                SetOpacityAtMouseLeaving((double)settingOpacityAtMouseLeaving);
+                targetWindow.OpacityAtMouseLeaving = (double)settingOpacityAtMouseLeaving;
         }
 
         private double? GetNullableDoubleSetting(string settingKey, double? defaultValue = null)

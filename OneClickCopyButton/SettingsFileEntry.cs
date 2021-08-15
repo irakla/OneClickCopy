@@ -63,7 +63,6 @@ namespace OneClickCopy
         public string DirectoryPathForSettings
         { get => Path.Combine(nowExecutedDirectory, folderNameForSettings); }
 
-        //if it set by exe file's path, it will be Setting File's path with the file's path.
         public string FilePathForWindowSettings
         { get => Path.Combine(DirectoryPathForSettings, FileNameForWindowSettings);    }
 
