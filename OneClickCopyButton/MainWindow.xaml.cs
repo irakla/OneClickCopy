@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -22,58 +25,80 @@ namespace OneClickCopy
     public partial class MainWindow : Window
     {
         private bool isChangedLocationOnScreen = false;
-        private bool isPinnedOnWindows = true;
+        private bool isPinnedTopmostButton = false;
 
-        private SettingFileEntry settingFile;
-        private WindowSettings nowWindowSettings;
+        private SettingsFileEntry settingsFileEntry;
+        private MainWindowSettingsController mainWindowSettingsController;
 
-        private const string SettingNameStartupLeftPosition = "StartupLeftPosition";
-        private const string SettingNameStartupTopPosition = "StartupTopPosition";
-        private const string SettingNameTopmostPinIsChecked = "TopmostPinIsChecked";
-        private const string SettingNameTransparentlyIfCursorLeftIsChecked = "TransparentlyIfCursorLeftIsChecked";
-        private const string SettingNameOpacityIfCursorLeft = "OpacityIfCursorLeft";
+        public bool TopmostButtonIsPinned
+        {
+            get => isPinnedTopmostButton;
+            set
+            {
+                isPinnedTopmostButton = value;
+                Topmost = value;
+                UpdatePinEdgeVisiblity();
+            }
+        }
+
+        public bool CanBeTransparent
+        {
+            get => checkboxCanBeTransparent.IsChecked != null && (bool)checkboxCanBeTransparent.IsChecked;
+            set => checkboxCanBeTransparent.IsChecked = value;
+        }
+
+        public double OpacityAtMouseLeaving
+        {
+            get => sliderOpacityAtMouseLeaving.Value;
+            set
+            {
+                if (value > 1.0)
+                    sliderOpacityAtMouseLeaving.Value = 1.0;
+                else if (value < 0)
+                    sliderOpacityAtMouseLeaving.Value = 0;
+                else
+                    sliderOpacityAtMouseLeaving.Value = value;
+            }
+        }
 
         public MainWindow()
         {
             InitializeComponent();
-            nowWindowSettings = new WindowSettings(this);
 
-            /*bool isSuccessfulReadingSettingFile = InitialSettingFileRead();
-
-            if (isSuccessfulReadingSettingFile)
-                ;//TODO 기존 설정파일 읽기 성공(SettingFileEntry가 읽어낸 세팅 덧씌움)
-            else
-            {
-                Properties.Settings.Default.LeftOnScreen.ToString();
-                Properties.Settings.Default.
-                ;//TODO 기존 설정파일이 없음(초기설정으로 세팅)
-            }*/
-
-            bool isExistPrevSetting = Properties.Settings.Default.IsExistPrevSetting;
-            if (isExistPrevSetting){
-                Left = Properties.Settings.Default.LeftOnScreen;
-                Top = Properties.Settings.Default.TopOnScreen;
-            }
-
-            Properties.Settings.Default.IsExistPrevSetting = true;
-            Properties.Settings.Default.Save();
+            Loaded += ApplyBeforeSettings;
         }
 
-        private bool InitialSettingFileRead()
+        public void UpdatePinEdgeVisiblity()
         {
-            SetNowWindowPin();
+            if (isPinnedTopmostButton)
+                pinEdge.Visibility = Visibility.Visible;
+            else
+                pinEdge.Visibility = Visibility.Hidden;
+        }
 
-            string nowPath = System.Environment.CurrentDirectory;
+        private void ApplyBeforeSettings(object sender, RoutedEventArgs e)
+        {
+            bool isSuccessfulLoadingSettings = LoadBeforeSettings();
 
-            if (string.IsNullOrEmpty(nowPath))
+            if (!isSuccessfulLoadingSettings)
+                return;
+
+            if (mainWindowSettingsController.IsLoadedWindowSettings)
             {
-                MessageBox.Show("환경설정 파일 경로를 찾지 못했습니다.(현재 경로 식별 실패)");
-                return false;
+                mainWindowSettingsController.DefaultLeftOnScreen = Left;
+                mainWindowSettingsController.DefaultTopOnScreen = Top;
+
+                mainWindowSettingsController.ApplyAllCurrentSettings();
             }
+        }
+
+        private bool LoadBeforeSettings()
+        {
+            UpdatePinEdgeVisiblity();
 
             try
             {
-                settingFile = new SettingFileEntry(this, nowPath);
+                settingsFileEntry = new SettingsFileEntry(this);
             }
             catch (IOException e)
             {
@@ -81,13 +106,11 @@ namespace OneClickCopy
                 return false;
             }
 
-            return true;
-        }
+            Configuration nowWindowSettings = settingsFileEntry.WindowSettingFromFile;
+            mainWindowSettingsController = new MainWindowSettingsController(this, nowWindowSettings);
+            bool isSuccessfulLoad = mainWindowSettingsController.IsLoadedWindowSettings;
 
-        private void IsClickedPin(object sender, RoutedEventArgs e)
-        {
-            isPinnedOnWindows = !isPinnedOnWindows;
-            SetNowWindowPin();
+            return isSuccessfulLoad;
         }
 
         private void IsClickedForDrag(object sender, MouseEventArgs mouseEventArgs)
@@ -99,10 +122,21 @@ namespace OneClickCopy
             }
         }
 
+        private void IsClickedTopmostButton(object sender, RoutedEventArgs e)
+        {
+            isPinnedTopmostButton = !isPinnedTopmostButton;
+            mainWindowSettingsController.SetTopmostState(isPinnedTopmostButton);
+        }
+
+        private void IsToggledCheckBoxCanBeTransparent(object sender, RoutedEventArgs e)
+        {
+            mainWindowSettingsController.SetCanBeTransparent(CanBeTransparent);
+        }
+
         private void IsMouseLeave(object sender, RoutedEventArgs e)
         {
-            if (checkboxOpacity.IsChecked.GetValueOrDefault())
-                Opacity = sliderOpacity.Value;
+            if (checkboxCanBeTransparent.IsChecked.GetValueOrDefault())
+                Opacity = sliderOpacityAtMouseLeaving.Value;
         }
 
         private void IsMouseEnter(object sender, RoutedEventArgs e)
@@ -110,21 +144,33 @@ namespace OneClickCopy
             Opacity = 1;
         }
 
-        private void IsMouseTest(object sender, MouseEventArgs e)
+        private void IsChangedOpacitySlide(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine(e.GetPosition(this));
+            Dispatcher.BeginInvoke((Action)(() =>
+            {
+                if (
+                    checkboxCanBeTransparent?.IsChecked != null &&
+                    (bool)checkboxCanBeTransparent.IsChecked
+                    )
+                {
+                    if (CheckIsMouseOverAtThisMoment())
+                        Opacity = 1;
+                    else
+                        Opacity = sliderOpacityAtMouseLeaving.Value;
+                }
+            }));
         }
 
-        private void SetNowWindowPin()
+        private void IsFixedOpacitySlide(object sender, RoutedEventArgs e)
         {
-            Topmost = isPinnedOnWindows;
-
-            if (isPinnedOnWindows)
-                pinEdge.Visibility = Visibility.Visible;
-            else
-                pinEdge.Visibility = Visibility.Hidden;
+            mainWindowSettingsController.SetOpacityAtMouseLeaving(OpacityAtMouseLeaving);
         }
 
+        private void IsFixedOpacitySlideByKey(object sender, KeyEventArgs e)
+        {
+            if(e.Key == Key.Left || e.Key == Key.Right)
+                mainWindowSettingsController.SetOpacityAtMouseLeaving(OpacityAtMouseLeaving);
+        }
 
         private void NotifyIsChangedLocationOnScreen(object sender, EventArgs changedEvent) => isChangedLocationOnScreen = true;
 
@@ -132,15 +178,27 @@ namespace OneClickCopy
         {
             if (isChangedLocationOnScreen)
             {
-                Properties.Settings.Default.LeftOnScreen = Left;
-                Properties.Settings.Default.TopOnScreen = Top;
-
-                Console.WriteLine(Properties.Settings.Default.LeftOnScreen + ", " + Properties.Settings.Default.TopOnScreen);
-                Properties.Settings.Default.Save();
+                mainWindowSettingsController.MoveLeftOnScreen(Left);
+                mainWindowSettingsController.MoveTopOnScreen(Top);
 
                 isChangedLocationOnScreen = false;
             }
         }
+
+        private bool CheckIsMouseOverAtThisMoment()
+        {
+            var mousePosition = Mouse.GetPosition(this);
+            return
+                mousePosition.X >= 0 && mousePosition.X <= Width &&
+                mousePosition.Y >= 0 && mousePosition.Y <= Height;
+        }
+
+#if DEBUG
+        private void IsMouseTest(object sender, MouseEventArgs e)
+        {
+            Console.WriteLine(e.GetPosition(this));
+        }
+#endif
 
         private void CommandBinding_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
 

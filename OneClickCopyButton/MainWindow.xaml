@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:OneClickCopy"
         mc:Ignorable="d"
         Title="OneClickCopy" ResizeMode="CanMinimize" Width="Auto"
-        WindowStyle="None" AllowsTransparency="True"
+        WindowStyle="None" AllowsTransparency="True" BorderBrush="Black" BorderThickness="2"
         WindowStartupLocation="CenterScreen"
         MouseDown="IsClickedForDrag" MouseLeave="IsMouseLeave" MouseEnter="IsMouseEnter"
         LocationChanged="NotifyIsChangedLocationOnScreen">
@@ -79,7 +79,7 @@
                                 StrokeThickness="0.75"/>
                         </Button>
 
-                        <Button Margin="0,0,70,0" Click="IsClickedPin">
+                        <Button Margin="0,0,70,0" Click="IsClickedTopmostButton">
                             <Button.Style>
                                 <Style TargetType="Button" BasedOn="{StaticResource systemButton}">
                                     <Style.Triggers>
@@ -95,14 +95,18 @@
                                          Fill="CadetBlue" />
                                 <Line X1="15" Y1="15"
                                       X2="23" Y2="23"
-                                      x:Name="pinEdge" Stroke="Red" StrokeThickness="1" Visibility="Hidden"/>
+                                      x:Name="pinEdge" Stroke="Red" StrokeThickness="1.5" Visibility="Hidden"/>
                             </Canvas>
                         </Button>
-                        <Slider x:Name="sliderOpacity" 
+                        <Slider x:Name="sliderOpacityAtMouseLeaving" 
                                 Margin="0, 0, 110, 0" VerticalAlignment="Center" HorizontalAlignment="Right"
                                 Width="100" Orientation="Horizontal"
-                                Value="0.25" Minimum="0.1" Maximum="1" SmallChange="0.1" LargeChange="0.3"/>
-                        <CheckBox x:Name="checkboxOpacity" Height="32" Width="55" Margin="0, 0, 235, 0" VerticalAlignment="Stretch" HorizontalAlignment="Right">
+                                Value="0.25" Minimum="0.1" Maximum="1" SmallChange="0.1" LargeChange="0.3"
+                                ValueChanged="IsChangedOpacitySlide"
+                                LostMouseCapture="IsFixedOpacitySlide" LostStylusCapture="IsFixedOpacitySlide"
+                                LostTouchCapture="IsFixedOpacitySlide" KeyUp="IsFixedOpacitySlideByKey" />
+                        <CheckBox x:Name="checkboxCanBeTransparent" Height="32" Width="55" Margin="0, 0, 235, 0" VerticalAlignment="Stretch" HorizontalAlignment="Right"
+                                  Checked="IsToggledCheckBoxCanBeTransparent" Unchecked="IsToggledCheckBoxCanBeTransparent">
                             <Canvas Height="32" Width="35">
                                 <Rectangle Canvas.Left="3" Canvas.Top="3" Width="10" Height="10"
                                            Stroke="Black" StrokeThickness="1" StrokeDashArray="1" />
