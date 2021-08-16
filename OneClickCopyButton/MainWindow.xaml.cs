@@ -27,6 +27,8 @@ namespace OneClickCopy
         private bool isChangedLocationOnScreen = false;
         private bool isPinnedTopmostButton = false;
 
+        private ClipboardLineList showingClipboardLineList = new ClipboardLineList();
+
         private SettingsFileEntry settingsFileEntry;
         private MainWindowSettingsController mainWindowSettingsController;
 
@@ -91,9 +93,9 @@ namespace OneClickCopy
         public void UpdatePinEdgeVisiblity()
         {
             if (isPinnedTopmostButton)
-                pinEdge.Visibility = Visibility.Visible;
+                PinEdge.Visibility = Visibility.Visible;
             else
-                pinEdge.Visibility = Visibility.Hidden;
+                PinEdge.Visibility = Visibility.Hidden;
         }
 
         private void ApplyBeforeSettings(object sender, RoutedEventArgs e)
@@ -102,13 +104,18 @@ namespace OneClickCopy
 
             if (!isSuccessfulLoadingSettings)
                 return;
+            
+            ApplyBeforeWindowSettings();
 
-            if (mainWindowSettingsController.IsLoadedWindowSettings)
+            //TODO : 클립보드 세팅 로드 및 적용
+            foreach (ClipboardLinePanel nowClipboardLine in
+                showingClipboardLineList.ClipboardLines)
             {
-                mainWindowSettingsController.DefaultLeftOnScreen = Left;
-                mainWindowSettingsController.DefaultTopOnScreen = Top;
-
-                mainWindowSettingsController.ApplyAllCurrentSettings();
+                ClipboardLineListPanel.Children.Add(nowClipboardLine);
+                ClipboardLineListPanel.MouseDown += (object _, MouseButtonEventArgs me) =>
+                {
+                    Debug.WriteLine("Mouse is Over!");
+                };
             }
         }
 
@@ -131,6 +138,17 @@ namespace OneClickCopy
             bool isSuccessfulLoad = mainWindowSettingsController.IsLoadedWindowSettings;
 
             return isSuccessfulLoad;
+        }
+
+        private void ApplyBeforeWindowSettings()
+        {
+            if (mainWindowSettingsController.IsLoadedWindowSettings)
+            {
+                mainWindowSettingsController.DefaultLeftOnScreen = Left;
+                mainWindowSettingsController.DefaultTopOnScreen = Top;
+
+                mainWindowSettingsController.ApplyAllCurrentSettings();
+            }
         }
 
         private void IsClickedForDrag(object sender, MouseEventArgs mouseEventArgs)

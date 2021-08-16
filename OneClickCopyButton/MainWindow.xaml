@@ -3,12 +3,13 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:local="clr-namespace:OneClickCopy"
         mc:Ignorable="d"
-        Title="OneClickCopy" ResizeMode="CanMinimize" Width="Auto"
+        Title="OneClickCopy" Width="Auto"
         WindowStyle="None" AllowsTransparency="True" BorderBrush="Black" BorderThickness="2"
         WindowStartupLocation="CenterScreen"
-        MouseDown="IsClickedForDrag" MouseLeave="IsMouseLeave" MouseEnter="IsMouseEnter"
+        MouseLeave="IsMouseLeave" MouseEnter="IsMouseEnter"
         LocationChanged="NotifyIsChangedLocationOnScreen">
     <Window.CommandBindings>
         <CommandBinding Command="{x:Static SystemCommands.CloseWindowCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_CloseWindow" />
@@ -16,7 +17,7 @@
     </Window.CommandBindings>
     <Border Name="background" BorderThickness="2" BorderBrush="LightGray">
         <DockPanel>
-            <Border Name="titleArea" DockPanel.Dock="Top" Height="32" BorderBrush="LightGray" BorderThickness="0.5">
+            <Border Name="TitleArea" DockPanel.Dock="Top" Height="32" BorderBrush="LightGray" BorderThickness="0.5">
                 <Grid>
                     <Label VerticalContentAlignment="Center" Margin="0,0,10,0" MouseDown="IsClickedForDrag">
                         <TextBlock Text="{Binding Title, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}"/>
@@ -95,7 +96,7 @@
                                          Fill="CadetBlue" />
                                 <Line X1="15" Y1="15"
                                       X2="23" Y2="23"
-                                      x:Name="pinEdge" Stroke="Red" StrokeThickness="1.5" Visibility="Hidden"/>
+                                      x:Name="PinEdge" Stroke="Red" StrokeThickness="1.5" Visibility="Hidden"/>
                             </Canvas>
                         </Button>
                         <Slider x:Name="sliderOpacityAtMouseLeaving" 
@@ -123,8 +124,10 @@
                     <RowDefinition Height="1*"/>
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0">
-                    <StackPanel Orientation="Vertical">
-                        <StackPanel.Resources>
+                    <StackPanel x:Name="ClipboardLineListPanel" Orientation="Vertical"
+                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                Background="Transparent">
+                        <!--StackPanel.Resources>
                             <Style x:Key="ButtonsMargin" TargetType="Button">
                                 <Setter Property="Margin" Value="15"/>
                                 <Setter Property="FontSize" Value="20"/>
@@ -132,11 +135,11 @@
                                 <Setter Property="Content" Value="Empty" />
                             </Style>
                             <Style BasedOn="{StaticResource ButtonsMargin}" TargetType="Button"/>
-                        </StackPanel.Resources>
-                        <Button x:Name="Button1"  />
-                        <Button x:Name="Button2"  />
+                        </StackPanel.Resources-->
+                        
                     </StackPanel>
                 </Grid>
+                
             </Grid>
         </DockPanel>
     </Border>
