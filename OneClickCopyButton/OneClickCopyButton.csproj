@@ -56,11 +56,19 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ClipboardData.cs" />
     <Compile Include="ClipboardLineList.cs" />
+    <Compile Include="Templates\ClipboardEditor.xaml.cs">
+      <DependentUpon>ClipboardEditor.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Templates\ClipboardLinePanel.xaml.cs">
       <DependentUpon>ClipboardLinePanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainWindowSettingsController.cs" />
+    <Page Include="Templates\ClipboardEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Templates\ClipboardLinePanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

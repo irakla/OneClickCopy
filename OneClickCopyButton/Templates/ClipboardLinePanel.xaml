@@ -7,6 +7,7 @@
       mc:Ignorable="d"
       Height="70"
       MinWidth="200"
+      
       d:DesignWidth="400" d:DesignHeight="70">
     <Grid.ColumnDefinitions>
         <ColumnDefinition Width="*"/>
@@ -61,7 +62,8 @@
         <TextBlock x:Name="ClipboardNameText" Text="Empty" HorizontalAlignment="Center"  VerticalAlignment="Center"/>
     </Button>
     
-    <Button Grid.Column="1" >
+    <Button Grid.Column="1"
+            Click="OpenClipboardEditor">
         <Canvas>
             <Line
                 X1="3" Y1="35"

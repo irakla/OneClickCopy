@@ -19,18 +19,20 @@ using System.Windows.Shapes;
 
 namespace OneClickCopy
 {
-    /// <summary>
-    /// MainWindow.xaml에 대한 상호 작용 논리
-    /// </summary>
+
     public partial class MainWindow : Window
     {
-        private bool isChangedLocationOnScreen = false;
         private bool isPinnedTopmostButton = false;
 
         private ClipboardLineList showingClipboardLineList = new ClipboardLineList();
 
         private SettingsFileEntry settingsFileEntry;
         private MainWindowSettingsController mainWindowSettingsController;
+
+        private bool IsReadyMainWindowSettingController
+        {
+            get => mainWindowSettingsController != null && mainWindowSettingsController.IsLoadedWindowSettings;
+        }
 
         public Point NowPositionOnScreen
         {
@@ -40,7 +42,21 @@ namespace OneClickCopy
                 Left = value.X;
                 Top = value.Y;
 
-                mainWindowSettingsController.SetNewPositionOnScreen(value);
+                if (IsReadyMainWindowSettingController)
+                    mainWindowSettingsController.SetNewPositionOnScreen(value);
+            }
+        }
+
+        public Size NowWindowSize
+        {
+            get => new Size(Width, Height);
+            set
+            {
+                Width = value.Width;
+                Height = value.Height;
+
+                if (IsReadyMainWindowSettingController)
+                    mainWindowSettingsController.SetNewWindowSize(value);
             }
         }
 
@@ -53,7 +69,8 @@ namespace OneClickCopy
                 Topmost = value;
                 UpdatePinEdgeVisiblity();
 
-                mainWindowSettingsController.SetTopmostState(value);
+                if (IsReadyMainWindowSettingController)
+                    mainWindowSettingsController.SetTopmostState(value);
             }
         }
 
@@ -63,7 +80,9 @@ namespace OneClickCopy
             set
             {
                 checkboxCanBeTransparent.IsChecked = value;
-                mainWindowSettingsController.SetCanBeTransparent(value);
+
+                if (IsReadyMainWindowSettingController)
+                    mainWindowSettingsController.SetCanBeTransparent(value);
             }
         }
 
@@ -79,7 +98,8 @@ namespace OneClickCopy
                 else
                     sliderOpacityAtMouseLeaving.Value = value;
 
-                mainWindowSettingsController.SetOpacityAtMouseLeaving(value);
+                if (IsReadyMainWindowSettingController)
+                    mainWindowSettingsController.SetOpacityAtMouseLeaving(value);
             }
         }
 
@@ -88,6 +108,7 @@ namespace OneClickCopy
             InitializeComponent();
 
             Loaded += ApplyBeforeSettings;
+            Loaded += SetWindowConstraintsWithElements;
         }
 
         public void UpdatePinEdgeVisiblity()
@@ -112,10 +133,14 @@ namespace OneClickCopy
                 showingClipboardLineList.ClipboardLines)
             {
                 ClipboardLineListPanel.Children.Add(nowClipboardLine);
-                ClipboardLineListPanel.MouseDown += (object _, MouseButtonEventArgs me) =>
-                {
-                    Debug.WriteLine("Mouse is Over!");
-                };
+            }
+
+            if (ClipboardLineListPanel.Children.Count > 0 &&
+                ClipboardLineListPanel.Children[0] is FrameworkElement)
+            {
+                double calculatedMinWidth = ((FrameworkElement)ClipboardLineListPanel.Children[0]).MinWidth;
+                ClipboardLineListPanel.MinWidth = calculatedMinWidth;
+                MinWidth = calculatedMinWidth;
             }
         }
 
@@ -146,9 +171,16 @@ namespace OneClickCopy
             {
                 mainWindowSettingsController.DefaultLeftOnScreen = Left;
                 mainWindowSettingsController.DefaultTopOnScreen = Top;
+                mainWindowSettingsController.DefaultWindowWidth = Width;
+                mainWindowSettingsController.DefaultWindowHeight = Height;
 
                 mainWindowSettingsController.ApplyAllCurrentSettings();
             }
+        }
+
+        private void SetWindowConstraintsWithElements(object sender, RoutedEventArgs e)
+        {
+            MinWidth = CustomTitleBar.ActualWidth;
         }
 
         private void IsClickedForDrag(object sender, MouseEventArgs mouseEventArgs)
@@ -156,7 +188,6 @@ namespace OneClickCopy
             if (mouseEventArgs.LeftButton == MouseButtonState.Pressed)
             {
                 this.DragMove();
-                ApplyLocationToProperty();
             }
         }
 
@@ -171,13 +202,21 @@ namespace OneClickCopy
                 CanBeTransparent = (bool)checkboxCanBeTransparent.IsChecked;
         }
 
-        private void IsMouseLeave(object sender, RoutedEventArgs e)
+        private void MakeWindowTransparent(object sender, MouseEventArgs e)
         {
-            if (checkboxCanBeTransparent.IsChecked.GetValueOrDefault())
+            if (!CanBeTransparent)
+                return;
+            Debug.WriteLine("Checking Transparent is possible");
+            Point cursorPosition = e.GetPosition(this);
+            bool isCursorOut = 
+                cursorPosition.X < 0 || cursorPosition.X > Width ||
+                cursorPosition.Y < 0 || cursorPosition.Y > Height;
+            Debug.WriteLine("CursorOut ? : " + cursorPosition);
+            if (isCursorOut)
                 Opacity = sliderOpacityAtMouseLeaving.Value;
         }
 
-        private void IsMouseEnter(object sender, RoutedEventArgs e)
+        private void MakeWindowThick(object sender, RoutedEventArgs e)
         {
             Opacity = 1;
         }
@@ -210,17 +249,18 @@ namespace OneClickCopy
                 OpacityAtMouseLeaving = sliderOpacityAtMouseLeaving.Value;
         }
 
-        private void NotifyIsChangedLocationOnScreen(object sender, EventArgs changedEvent) => isChangedLocationOnScreen = true;
-
-        private void ApplyLocationToProperty()
+        private void NotifyIsChangedPositionOnScreen(object sender, EventArgs _)
         {
-            if (isChangedLocationOnScreen)
-            {
-                NowPositionOnScreen = new Point(Left, Top);
-
-                isChangedLocationOnScreen = false;
-            }
+            ApplyNowLocationToProperty();
         }
+
+        private void NotifyIsChangedWindowSize(object sender, EventArgs _)
+        {
+            ApplySizeToProperty();
+        }
+
+        private void ApplyNowLocationToProperty() => NowPositionOnScreen = new Point(Left, Top);
+        private void ApplySizeToProperty() => NowWindowSize = new Size(Width, Height);
 
         private bool CheckIsMouseOverAtThisMoment()
         {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OneClickCopy.Templates;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -24,12 +25,15 @@ namespace OneClickCopy
         public ClipboardLinePanel()
         {
             InitializeComponent();
-            MouseDown += ResponseTest;
         }
 
-        public void ResponseTest(object o, EventArgs e)
+        public void OpenClipboardEditor(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine("Hello");
+            if(sender is Button)
+            {
+                Button buttonModifyContent = (Button)sender;
+                ClipboardEditor ce = new ClipboardEditor(buttonModifyContent);
+            }
         }
     }
 }

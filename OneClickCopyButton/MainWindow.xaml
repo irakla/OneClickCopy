@@ -1,4 +1,5 @@
 ﻿<Window x:Class="OneClickCopy.MainWindow"
+        x:Name="NowWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -9,12 +10,22 @@
         Title="OneClickCopy" Width="Auto"
         WindowStyle="None" AllowsTransparency="True" BorderBrush="Black" BorderThickness="2"
         WindowStartupLocation="CenterScreen"
-        MouseLeave="IsMouseLeave" MouseEnter="IsMouseEnter"
-        LocationChanged="NotifyIsChangedLocationOnScreen">
+        MouseLeave="MakeWindowTransparent" MouseEnter="MakeWindowThick" 
+        LocationChanged="NotifyIsChangedPositionOnScreen">
     <Window.CommandBindings>
         <CommandBinding Command="{x:Static SystemCommands.CloseWindowCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_CloseWindow" />
         <CommandBinding Command="{x:Static SystemCommands.MinimizeWindowCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_MinimizeWindow" />
     </Window.CommandBindings>
+    <WindowChrome.WindowChrome>
+        <WindowChrome 
+            CaptionHeight="0" ResizeBorderThickness="5" UseAeroCaptionButtons="False"/>
+    </WindowChrome.WindowChrome>
+    <Window.Style>
+        <Style BasedOn="{StaticResource {x:Type Window}}" TargetType="{x:Type Window}">
+            <EventSetter Event="SizeChanged" Handler="MakeWindowThick" />
+            <EventSetter Event="SizeChanged" Handler="NotifyIsChangedWindowSize"/>
+        </Style>
+    </Window.Style>
     <Border Name="background" BorderThickness="2" BorderBrush="LightGray">
         <DockPanel>
             <Border Name="TitleArea" DockPanel.Dock="Top" Height="32" BorderBrush="LightGray" BorderThickness="0.5">
@@ -23,7 +34,8 @@
                         <TextBlock Text="{Binding Title, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}"/>
                     </Label>
 
-                    <Grid HorizontalAlignment="Right" Background="White">
+                    <Grid x:Name="CustomTitleBar"
+                        HorizontalAlignment="Right" Background="White">
                         <Grid.Resources>
                             <Style TargetType="{x:Type Button}" x:Key="systemButton">
                                 <Setter Property="Padding" Value="0"/>
@@ -106,7 +118,7 @@
                                 ValueChanged="IsChangedOpacitySlide"
                                 LostMouseCapture="IsFixedOpacitySlide" LostStylusCapture="IsFixedOpacitySlide"
                                 LostTouchCapture="IsFixedOpacitySlide" KeyUp="IsFixedOpacitySlideByKey" />
-                        <CheckBox x:Name="checkboxCanBeTransparent" Height="32" Width="55" Margin="0, 0, 235, 0" VerticalAlignment="Stretch" HorizontalAlignment="Right"
+                        <CheckBox x:Name="checkboxCanBeTransparent" Height="32"  Margin="0, 0, 235, 0" VerticalAlignment="Stretch" HorizontalAlignment="Right"
                                   Checked="IsToggledCheckBoxCanBeTransparent" Unchecked="IsToggledCheckBoxCanBeTransparent">
                             <Canvas Height="32" Width="35">
                                 <Rectangle Canvas.Left="3" Canvas.Top="3" Width="10" Height="10"

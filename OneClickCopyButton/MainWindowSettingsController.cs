@@ -12,25 +12,30 @@ namespace OneClickCopy
     {
         private const string SettingKeyLeftOnScreen = "LeftOnScreen";
         private const string SettingKeyTopOnScreen = "TopOnScreen";
+        private const string SettingKeyWindowWidth = "WindowWidth";
+        private const string SettingKeyWindowHeight = "WindowHeight";
         private const string SettingKeyTopmostPinState = "TopmostPinState";
         private const string SettingKeyCanBeTransparent = "CanBeTransparent";
         private const string SettingKeyOpacityAtMouseLeaving = "OpacityAtMouseLeaving";
 
         private double defaultLeftOnScreen = 100;
         private double defaultTopOnScreen = 100;
+        private double defaultWindowWidth = 300;
+        private double defaultWindowHeight = 300;
         private bool defaultTopmostPinState;
         private bool defaultCanBeTransparent;
         private double defaultOpacityAtMouseLeaving;
 
         private Configuration targetWindowSettings = null;
         private MainWindow targetWindow;
-        private bool isActivatedBatchSave = false;
 
         public Configuration TargetWindowSettings
         { get => targetWindowSettings; set => targetWindowSettings = value; }
 
         public double DefaultLeftOnScreen { get => defaultLeftOnScreen; set => defaultLeftOnScreen = value; }
         public double DefaultTopOnScreen { get => defaultTopOnScreen; set => defaultTopOnScreen = value; }
+        public double DefaultWindowWidth { get => defaultWindowWidth; set => defaultWindowWidth = value; }
+        public double DefaultWindowHeight { get => defaultWindowHeight; set => defaultWindowHeight = value; }
 
         public MainWindowSettingsController(MainWindow targetWindow, Configuration initialSettings)
         {
@@ -66,8 +71,7 @@ namespace OneClickCopy
             if(IsLoadedWindowSettings)
                 NowSettingsCollection[SettingKeyLeftOnScreen].Value = newLeftOnScreen.ToString();
 
-            if (!isActivatedBatchSave)
-                targetWindowSettings.Save(ConfigurationSaveMode.Modified);
+            targetWindowSettings.Save(ConfigurationSaveMode.Modified);
         }
 
         public void MoveTopOnScreen(double newTopOnScreen)
@@ -77,8 +81,7 @@ namespace OneClickCopy
             if (IsLoadedWindowSettings)
                 NowSettingsCollection[SettingKeyTopOnScreen].Value = newTopOnScreen.ToString();
 
-            if (!isActivatedBatchSave)
-                targetWindowSettings.Save(ConfigurationSaveMode.Modified);
+            targetWindowSettings.Save(ConfigurationSaveMode.Modified);
         }
 
         public void SetNewPositionOnScreen(Point newPointOnScreen)
@@ -89,8 +92,18 @@ namespace OneClickCopy
                 NowSettingsCollection[SettingKeyTopOnScreen].Value = newPointOnScreen.Y.ToString();
             }
 
-            if (!isActivatedBatchSave)
-                targetWindowSettings.Save(ConfigurationSaveMode.Modified);
+            targetWindowSettings.Save(ConfigurationSaveMode.Modified);
+        }
+
+        public void SetNewWindowSize(Size newWindowSize)
+        {
+            if (IsLoadedWindowSettings)
+            {
+                NowSettingsCollection[SettingKeyWindowWidth].Value = newWindowSize.Width.ToString();
+                NowSettingsCollection[SettingKeyWindowHeight].Value = newWindowSize.Height.ToString();
+            }
+
+            targetWindowSettings.Save(ConfigurationSaveMode.Modified);
         }
 
         public void SetTopmostState(bool stateIsPinned)
@@ -98,8 +111,7 @@ namespace OneClickCopy
             if (IsLoadedWindowSettings)
                 NowSettingsCollection[SettingKeyTopmostPinState].Value = stateIsPinned.ToString();
 
-            if (!isActivatedBatchSave)
-                targetWindowSettings.Save(ConfigurationSaveMode.Modified);
+            targetWindowSettings.Save(ConfigurationSaveMode.Modified);
         }
 
         public void SetCanBeTransparent(bool stateCanBeTransParent)
@@ -107,8 +119,7 @@ namespace OneClickCopy
             if (IsLoadedWindowSettings)
                 NowSettingsCollection[SettingKeyCanBeTransparent].Value = stateCanBeTransParent.ToString();
 
-            if (!isActivatedBatchSave)
-                targetWindowSettings.Save(ConfigurationSaveMode.Modified);
+            targetWindowSettings.Save(ConfigurationSaveMode.Modified);
         }
 
         public void SetOpacityAtMouseLeaving(double newOpacity)
@@ -116,8 +127,7 @@ namespace OneClickCopy
             if (IsLoadedWindowSettings)
                 NowSettingsCollection[SettingKeyOpacityAtMouseLeaving].Value = newOpacity.ToString();
 
-            if (!isActivatedBatchSave)
-                targetWindowSettings.Save(ConfigurationSaveMode.Modified);
+            targetWindowSettings.Save(ConfigurationSaveMode.Modified);
         }
 
         public void ApplyAllCurrentSettings()
@@ -127,6 +137,12 @@ namespace OneClickCopy
             if (settingLeftOnScreen != null && settingTopOnScreen != null)
                 targetWindow.NowPositionOnScreen 
                     = new Point((double)settingLeftOnScreen, (double)settingTopOnScreen);
+
+            double? settingWindowWidth = GetNullableDoubleSetting(SettingKeyWindowWidth, defaultWindowWidth);
+            double? settingWindowHeight = GetNullableDoubleSetting(SettingKeyWindowHeight, defaultWindowHeight);
+            if (settingWindowWidth != null && settingWindowHeight != null)
+                targetWindow.NowWindowSize
+                    = new Size((double)settingWindowWidth, (double)settingWindowHeight);
 
             bool? settingTopmostState = GetNullableBoolSetting(SettingKeyTopmostPinState, defaultTopmostPinState);
             if (settingTopmostState != null)
@@ -182,8 +198,7 @@ namespace OneClickCopy
             if (IsLoadedWindowSettings)
                 NowSettingsCollection.Add(settingKey, settingValue);
 
-            if (!isActivatedBatchSave)
-                targetWindowSettings.Save(ConfigurationSaveMode.Modified);
+            targetWindowSettings.Save(ConfigurationSaveMode.Modified);
         }
     }
 }
