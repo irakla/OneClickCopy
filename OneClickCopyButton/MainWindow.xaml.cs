@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -206,16 +207,11 @@ namespace OneClickCopy
         {
             if (!CanBeTransparent)
                 return;
-            Debug.WriteLine("Checking Transparent is possible");
-            Point cursorPosition = e.GetPosition(this);
-            bool isCursorOut = 
-                cursorPosition.X < 0 || cursorPosition.X > Width ||
-                cursorPosition.Y < 0 || cursorPosition.Y > Height;
-            Debug.WriteLine("CursorOut ? : " + cursorPosition);
-            if (isCursorOut)
+            
+            if (!IsMouseOverAtThisMoment())
                 Opacity = sliderOpacityAtMouseLeaving.Value;
         }
-
+        
         private void MakeWindowThick(object sender, RoutedEventArgs e)
         {
             Opacity = 1;
@@ -230,7 +226,7 @@ namespace OneClickCopy
                     (bool)checkboxCanBeTransparent.IsChecked
                     )
                 {
-                    if (CheckIsMouseOverAtThisMoment())
+                    if (IsMouseOverAtThisMoment())
                         Opacity = 1;
                     else
                         Opacity = sliderOpacityAtMouseLeaving.Value;
@@ -262,12 +258,28 @@ namespace OneClickCopy
         private void ApplyNowLocationToProperty() => NowPositionOnScreen = new Point(Left, Top);
         private void ApplySizeToProperty() => NowWindowSize = new Size(Width, Height);
 
-        private bool CheckIsMouseOverAtThisMoment()
+        [StructLayout(LayoutKind.Sequential)]
+        public struct POINTWin32 { public int X, Y; }
+
+        //For tracing Cursor on outside our Window
+        [DllImport("user32.dll")]
+        public static extern bool GetCursorPos(out POINTWin32 lpPoint);
+
+        private bool IsMouseOverAtThisMoment()
         {
-            var mousePosition = Mouse.GetPosition(this);
-            return
-                mousePosition.X >= 0 && mousePosition.X <= Width &&
-                mousePosition.Y >= 0 && mousePosition.Y <= Height;
+            int WindowBorderLeft = (int)(Left + NowWindowChrome.ResizeBorderThickness.Left);
+            int WindowBorderRight = (int)(Left + Width - NowWindowChrome.ResizeBorderThickness.Right);
+            int WindowBorderTop = (int)(Top + NowWindowChrome.ResizeBorderThickness.Top);
+            int WindowBorderBottom = (int)(Top + Height - NowWindowChrome.ResizeBorderThickness.Bottom);
+            
+            POINTWin32 cursorPosition;
+            
+            GetCursorPos(out cursorPosition);
+            bool isMouseOver =
+                cursorPosition.X >= WindowBorderLeft && cursorPosition.X < WindowBorderRight &&
+                cursorPosition.Y >= WindowBorderTop && cursorPosition.Y < WindowBorderBottom;
+
+            return isMouseOver;
         }
 
 #if DEBUG

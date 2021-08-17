@@ -17,7 +17,7 @@
         <CommandBinding Command="{x:Static SystemCommands.MinimizeWindowCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_MinimizeWindow" />
     </Window.CommandBindings>
     <WindowChrome.WindowChrome>
-        <WindowChrome 
+        <WindowChrome x:Name="NowWindowChrome"
             CaptionHeight="0" ResizeBorderThickness="5" UseAeroCaptionButtons="False"/>
     </WindowChrome.WindowChrome>
     <Window.Style>
