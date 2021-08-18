@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Linq;
 using System.Text;
@@ -8,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace OneClickCopy
 {
-    public class ClipboardLineList : ObservableCollection<ClipboardLinePanel>
+    public class ClipboardLineList
     {
         private List<ClipboardLinePanel> clipboardLineList = new List<ClipboardLinePanel>();
         private int minimumLine = 1;

@@ -40,6 +40,15 @@ namespace OneClickCopy
             get => new Point(Left, Top);
             set
             {
+                double availableLeftBound = SystemParameters.VirtualScreenLeft - (Width != double.NaN ? Width : 0);
+                double availableTopBound = SystemParameters.VirtualScreenTop - (TitleArea.Height != double.NaN ? TitleArea.Height : 0);
+                double availableRightBound = SystemParameters.VirtualScreenWidth;
+                double availableBottomBound = SystemParameters.VirtualScreenHeight;
+
+                if (value.X <= availableLeftBound || value.X >= availableRightBound ||
+                    value.Y <= availableTopBound || value.Y >= availableBottomBound)
+                    return;
+
                 Left = value.X;
                 Top = value.Y;
 

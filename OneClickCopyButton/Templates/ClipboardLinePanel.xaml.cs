@@ -22,18 +22,79 @@ namespace OneClickCopy
     /// </summary>
     public partial class ClipboardLinePanel : Grid
     {
+        private bool isEdittingClipboardContent = false;
+        private ClipboardEditor lastClipboardEditor = null;
+
+        public bool IsEditting
+        {
+            get => isEdittingClipboardContent;
+            set
+            {
+                isEdittingClipboardContent = value;
+
+                if (isEdittingClipboardContent)
+                {
+                    EditButton.Style = (Style)Resources["EdittingLineButton"];
+                }
+                else
+                {
+                    EditButton.Style = (Style)Resources["DefaultLineButton"];
+                    
+                }
+            }
+        }
+
         public ClipboardLinePanel()
         {
             InitializeComponent();
         }
 
-        public void OpenClipboardEditor(object sender, RoutedEventArgs e)
+        public void FlushLastClipboardEditor()
         {
-            if(sender is Button)
+            if (lastClipboardEditor != null)
+                lastClipboardEditor.IsOpen = false;
+
+            IsEditting = false;
+        }
+
+        public void OnClipboardEditorByCopyButton(object sender, MouseEventArgs mouseEvent)
+        {
+            FlushLastClipboardEditor();
+
+            Point nowCursorPosition = mouseEvent.GetPosition(Application.Current.MainWindow);
+
+            lastClipboardEditor = new ClipboardEditor();
+            IsEditting = true;
+
+            if (lastClipboardEditor != null)
             {
-                Button buttonModifyContent = (Button)sender;
-                ClipboardEditor ce = new ClipboardEditor(buttonModifyContent);
+                lastClipboardEditor.Closed += ReportSelfClose;
             }
+        }
+
+        public void OnOffClipboardEditorByEditButton(object sender, EventArgs _)
+        {
+            if (IsEditting)
+            {
+
+            }
+            else
+            {
+                FlushLastClipboardEditor();
+                lastClipboardEditor = new ClipboardEditor(EditButton);
+                IsEditting = true;
+
+                if (lastClipboardEditor != null)
+                {
+                    lastClipboardEditor.Closed += ReportSelfClose;
+                }
+            }
+        }
+
+        private void ReportSelfClose(object reporter, EventArgs e)
+        {
+            if (reporter == lastClipboardEditor)
+                IsEditting = false;
         }
     }
 }
