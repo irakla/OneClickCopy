@@ -64,12 +64,14 @@ namespace OneClickCopy
             Point nowCursorPosition = mouseEvent.GetPosition(Application.Current.MainWindow);
 
             lastClipboardEditor = new ClipboardEditor();
-            IsEditting = true;
+            SetClipboardEditorCommon();
 
-            if (lastClipboardEditor != null)
-            {
-                lastClipboardEditor.Closed += ReportSelfClose;
+            IDataObject clipboardDataObject = Clipboard.GetDataObject();
+            foreach(string nowFormat in clipboardDataObject.GetFormats(false)){
+                Debug.WriteLine(nowFormat);
             }
+            lastClipboardEditor.ClipboardEditorContent = clipboardDataObject;
+            
         }
 
         public void OnOffClipboardEditorByEditButton(object sender, EventArgs _)
@@ -82,12 +84,7 @@ namespace OneClickCopy
             {
                 FlushLastClipboardEditor();
                 lastClipboardEditor = new ClipboardEditor(EditButton);
-                IsEditting = true;
-
-                if (lastClipboardEditor != null)
-                {
-                    lastClipboardEditor.Closed += ReportSelfClose;
-                }
+                SetClipboardEditorCommon();
             }
         }
 
@@ -95,6 +92,31 @@ namespace OneClickCopy
         {
             if (reporter == lastClipboardEditor)
                 IsEditting = false;
+        }
+
+        private void SetClipboardEditorCommon()
+        {
+            IsEditting = true;
+
+            BindTitleTextControls();
+
+            if (lastClipboardEditor != null)
+            {
+                lastClipboardEditor.Closed += ReportSelfClose;
+            }
+        }
+
+        private void BindTitleTextControls()
+        {
+            var titleBinding = new Binding("Text");
+            var bindingTitleTextBox = lastClipboardEditor.TitleTextBox;
+            bindingTitleTextBox.Text = ClipboardTitleText.Text;
+
+            titleBinding.Source = bindingTitleTextBox;
+            titleBinding.Mode = BindingMode.OneWay;
+            titleBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
+
+            BindingOperations.SetBinding(ClipboardTitleText, TextBlock.TextProperty, titleBinding);
         }
     }
 }

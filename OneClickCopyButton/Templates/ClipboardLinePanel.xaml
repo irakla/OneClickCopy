@@ -72,7 +72,7 @@
 
     <Button Grid.Column="0" Style="{StaticResource DefaultLineButton}" x:Name="CopyButton"
             MouseRightButtonUp="OnClipboardEditorByCopyButton">
-        <TextBlock x:Name="ClipboardNameText" 
+        <TextBlock x:Name="ClipboardTitleText" 
                    HorizontalAlignment="Center"  VerticalAlignment="Center"
                    Text="Empty" FontSize="15"/>
     </Button>

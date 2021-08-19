@@ -23,8 +23,29 @@ namespace OneClickCopy.Templates
     public partial class ClipboardEditor : Popup
     {
         private bool isBinaryData = false;
+        private IDataObject nowEditorClipboardData = null;
 
         private Window currentMainWindow =Application.Current.MainWindow;
+
+        public IDataObject ClipboardEditorContent
+        {
+            set
+            {
+                nowEditorClipboardData = value;
+
+                if(ClipboardContentLabel.Content is TextBox)
+                {
+                    TextBox nowTextBox = (TextBox)ClipboardContentLabel.Content;
+                    
+                    foreach(string nowFormat in value.GetFormats())
+                    {
+                        nowTextBox.Text += (string)value.GetData(nowFormat) + '\n';
+                        
+                    }
+                    
+                }
+            }
+        }
 
         public ClipboardEditor()
         {
@@ -58,8 +79,9 @@ namespace OneClickCopy.Templates
                 TextBox txtboxCopyingContent = new TextBox();
                 txtboxCopyingContent.HorizontalAlignment = HorizontalAlignment.Stretch;
                 txtboxCopyingContent.MinLines = 3;
-                EditorGrid.Children.Add(txtboxCopyingContent);
-                Grid.SetRow(txtboxCopyingContent, 3);
+                /*EditorGrid.Children.Add(txtboxCopyingContent);
+                Grid.SetRow(txtboxCopyingContent, 3);*/
+                ClipboardContentLabel.Content = txtboxCopyingContent;
                 txtboxCopyingContent.Focus();
             }
         }
@@ -69,6 +91,7 @@ namespace OneClickCopy.Templates
             if (IsMouseOver)
                 return;
 
+            BindingOperations.ClearBinding(TitleTextBox, TextBlock.TextProperty);
             IsOpen = false;
 
             if (e is RoutedEventArgs)

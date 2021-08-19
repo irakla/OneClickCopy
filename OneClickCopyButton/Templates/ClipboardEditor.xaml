@@ -12,11 +12,11 @@
             <Grid.Resources>
                 <Style x:Key="EditorDescriptionFont" TargetType="{x:Type TextBlock}">
                     <Setter Property="FontWeight" Value="Normal"/>
-                    <Setter Property="FontSize" Value="11"/>
+                    <Setter Property="FontSize" Value="15"/>
                 </Style>
                 <Style x:Key="EditorContentFont" TargetType="{x:Type TextBox}">
                     <Setter Property="FontWeight" Value="Normal"/>
-                    <Setter Property="FontSize" Value="11"/>
+                    <Setter Property="FontSize" Value="15"/>
                 </Style>
             </Grid.Resources>
             <Grid.RowDefinitions>
@@ -32,9 +32,7 @@
                 </TextBlock.Inlines>
             </TextBlock>
 
-            <TextBox Grid.Row="1" Style="{StaticResource EditorContentFont}" Text="Test">
-                
-            </TextBox>
+            <TextBox Grid.Row="1" Style="{StaticResource EditorContentFont}" x:Name="TitleTextBox" Text="Test" Margin="2,2,2,2"/>
 
             <TextBlock Grid.Row="2" Style="{StaticResource EditorDescriptionFont}">
                 <TextBlock.Inlines>
@@ -42,8 +40,8 @@
                 </TextBlock.Inlines>
             </TextBlock>
 
-            <!--Label Grid.Row="3" x:Name="ClipboardContentLabel" 
-                   HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"/-->
+            <Label Grid.Row="3" x:Name="ClipboardContentLabel" 
+                   HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"/>
         </Grid>
     </Border>
 </Popup>
