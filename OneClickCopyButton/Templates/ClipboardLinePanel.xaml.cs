@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -24,6 +25,7 @@ namespace OneClickCopy
     {
         private bool isEdittingClipboardContent = false;
         private ClipboardEditor lastClipboardEditor = null;
+        private IDataObject currentOwnCopy = null;
 
         public bool IsEditting
         {
@@ -39,10 +41,11 @@ namespace OneClickCopy
                 else
                 {
                     EditButton.Style = (Style)Resources["DefaultLineButton"];
-                    
                 }
             }
         }
+
+        public bool HasOwnCopy { get => currentOwnCopy != null; }
 
         public ClipboardLinePanel()
         {
@@ -57,21 +60,49 @@ namespace OneClickCopy
             IsEditting = false;
         }
 
+        public void CopyToSystemClipboard(object sender, EventArgs e)
+        {
+            if (HasOwnCopy)
+            {
+                /*Thread thread = new Thread(() =>
+                {
+                    Clipboard.SetDataObject(currentOwnCopy, true);
+                });
+                thread.SetApartmentState(ApartmentState.STA);
+
+                thread.Start();*/
+                Clipboard.SetDataObject(currentOwnCopy, true);
+            }
+        }
+
         public void OnClipboardEditorByCopyButton(object sender, MouseEventArgs mouseEvent)
         {
             FlushLastClipboardEditor();
 
             Point nowCursorPosition = mouseEvent.GetPosition(Application.Current.MainWindow);
 
-            lastClipboardEditor = new ClipboardEditor();
-            SetClipboardEditorCommon();
+            CopyFromSystemClipboard();
 
-            IDataObject clipboardDataObject = Clipboard.GetDataObject();
-            foreach(string nowFormat in clipboardDataObject.GetFormats(false)){
-                Debug.WriteLine(nowFormat);
+            if (HasOwnCopy)
+            {
+                lastClipboardEditor = new ClipboardEditor();
+                SetClipboardEditorCommon();
+                lastClipboardEditor.ClipboardEditorContent = currentOwnCopy;
+
+                foreach (string nowFormat in currentOwnCopy.GetFormats(false))
+                {
+                    Debug.WriteLine("Can be : " + nowFormat);
+                }   //test
             }
-            lastClipboardEditor.ClipboardEditorContent = clipboardDataObject;
-            
+        }
+
+        private void CopyFromSystemClipboard()
+        {
+            bool TheCopiesAreEqual = HasOwnCopy && Clipboard.IsCurrent(currentOwnCopy);
+            if (TheCopiesAreEqual)
+                return;
+
+            currentOwnCopy = Clipboard.GetDataObject();
         }
 
         public void OnOffClipboardEditorByEditButton(object sender, EventArgs _)

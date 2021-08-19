@@ -71,6 +71,7 @@
     </Grid.Resources>
 
     <Button Grid.Column="0" Style="{StaticResource DefaultLineButton}" x:Name="CopyButton"
+            Click="CopyToSystemClipboard"
             MouseRightButtonUp="OnClipboardEditorByCopyButton">
         <TextBlock x:Name="ClipboardTitleText" 
                    HorizontalAlignment="Center"  VerticalAlignment="Center"

@@ -36,13 +36,21 @@ namespace OneClickCopy.Templates
                 if(ClipboardContentLabel.Content is TextBox)
                 {
                     TextBox nowTextBox = (TextBox)ClipboardContentLabel.Content;
-                    
-                    foreach(string nowFormat in value.GetFormats())
+
+                    /*foreach(string nowFormat in value.GetFormats())
                     {
-                        nowTextBox.Text += (string)value.GetData(nowFormat) + '\n';
-                        
-                    }
-                    
+                        if (nowFormat == DataFormats.Text ||
+                            nowFormat == DataFormats.OemText ||
+                            nowFormat == DataFormats.UnicodeText
+                            )
+                        {
+                            nowTextBox.Text += nowFormat + " : ";
+                            nowTextBox.Text += (string)value.GetData(nowFormat) + '\n';
+                        }
+                    }*/
+
+                    if (value.GetFormats().Contains<string>(DataFormats.Text))
+                        nowTextBox.Text += (string)value.GetData(DataFormats.Text);
                 }
             }
         }
@@ -79,8 +87,6 @@ namespace OneClickCopy.Templates
                 TextBox txtboxCopyingContent = new TextBox();
                 txtboxCopyingContent.HorizontalAlignment = HorizontalAlignment.Stretch;
                 txtboxCopyingContent.MinLines = 3;
-                /*EditorGrid.Children.Add(txtboxCopyingContent);
-                Grid.SetRow(txtboxCopyingContent, 3);*/
                 ClipboardContentLabel.Content = txtboxCopyingContent;
                 txtboxCopyingContent.Focus();
             }
