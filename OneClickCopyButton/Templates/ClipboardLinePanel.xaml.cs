@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,7 +26,7 @@ namespace OneClickCopy
     {
         private bool isEdittingClipboardContent = false;
         private ClipboardEditor lastClipboardEditor = null;
-        private IDataObject currentOwnCopy = null;
+        private DataObject currentOwnCopy = null;
 
         public bool IsEditting
         {
@@ -41,6 +42,8 @@ namespace OneClickCopy
                 else
                 {
                     EditButton.Style = (Style)Resources["DefaultLineButton"];
+                    if (lastClipboardEditor != null)
+                        lastClipboardEditor.IsOpen = false;
                 }
             }
         }
@@ -50,14 +53,6 @@ namespace OneClickCopy
         public ClipboardLinePanel()
         {
             InitializeComponent();
-        }
-
-        public void FlushLastClipboardEditor()
-        {
-            if (lastClipboardEditor != null)
-                lastClipboardEditor.IsOpen = false;
-
-            IsEditting = false;
         }
 
         public void CopyToSystemClipboard(object sender, EventArgs e)
@@ -71,13 +66,14 @@ namespace OneClickCopy
                 thread.SetApartmentState(ApartmentState.STA);
 
                 thread.Start();*/
-                Clipboard.SetDataObject(currentOwnCopy, true);
+                Clipboard.Clear();
+                Clipboard.SetDataObject(currentOwnCopy);
             }
         }
 
         public void OnClipboardEditorByCopyButton(object sender, MouseEventArgs mouseEvent)
         {
-            FlushLastClipboardEditor();
+            IsEditting = false;
 
             Point nowCursorPosition = mouseEvent.GetPosition(Application.Current.MainWindow);
 
@@ -102,7 +98,22 @@ namespace OneClickCopy
             if (TheCopiesAreEqual)
                 return;
 
-            currentOwnCopy = Clipboard.GetDataObject();
+            IDataObject currentClipboardData = Clipboard.GetDataObject();
+            currentOwnCopy = new DataObject();
+            
+            foreach(string nowFormat in currentClipboardData.GetFormats())
+            {
+                Debug.WriteLine("Can be : " + nowFormat);
+                object nowCopyingData = currentClipboardData.GetData(nowFormat);
+                Debug.WriteLine("Contents : " + nowCopyingData);
+                if (nowCopyingData != null)
+                    currentOwnCopy.SetData(nowFormat, nowCopyingData);
+            }
+
+            byte[] bytes = null;
+
+            var binarySerializer = new BinaryFormatter();
+            var serializedOwnCopy = binarySerializer.Serialize((new SerializableDataObject(currentOwnCopy)));
         }
 
         public void OnOffClipboardEditorByEditButton(object sender, EventArgs _)
@@ -113,16 +124,13 @@ namespace OneClickCopy
             }
             else
             {
-                FlushLastClipboardEditor();
+                IsEditting = false;
                 lastClipboardEditor = new ClipboardEditor(EditButton);
                 SetClipboardEditorCommon();
-            }
-        }
 
-        private void ReportSelfClose(object reporter, EventArgs e)
-        {
-            if (reporter == lastClipboardEditor)
-                IsEditting = false;
+                if(HasOwnCopy)
+                    lastClipboardEditor.ClipboardEditorContent = currentOwnCopy;
+            }
         }
 
         private void SetClipboardEditorCommon()
@@ -148,6 +156,19 @@ namespace OneClickCopy
             titleBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
 
             BindingOperations.SetBinding(ClipboardTitleText, TextBlock.TextProperty, titleBinding);
+        }
+
+        private void ReportSelfClose(object reporter, EventArgs e)
+        {
+            if (reporter == lastClipboardEditor)
+                IsEditting = false;
+        }
+
+        public void SetOwnCopyPersisted(object sender, EventArgs e)
+        {
+            Debug.WriteLine("Unloaded! state : " + Clipboard.IsCurrent(currentOwnCopy));
+            if (HasOwnCopy && Clipboard.IsCurrent(currentOwnCopy))
+                Clipboard.SetDataObject(currentOwnCopy, true);
         }
     }
 }
