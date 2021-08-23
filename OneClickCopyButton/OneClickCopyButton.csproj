@@ -59,7 +59,6 @@
     </ApplicationDefinition>
     <Compile Include="ClipboardData.cs" />
     <Compile Include="ClipboardLineList.cs" />
-    <Compile Include="SerializableDataObject.cs" />
     <Compile Include="Templates\ClipboardEditor.xaml.cs">
       <DependentUpon>ClipboardEditor.xaml</DependentUpon>
     </Compile>
