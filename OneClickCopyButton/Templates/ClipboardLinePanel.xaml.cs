@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
@@ -60,6 +59,13 @@ namespace OneClickCopy
         {
             if (HasOwnCopy)
             {
+                /*Thread thread = new Thread(() =>
+                {
+                    Clipboard.SetDataObject(currentOwnCopy, true);
+                });
+                thread.SetApartmentState(ApartmentState.STA);
+
+                thread.Start();*/
                 Clipboard.Clear();
                 Clipboard.SetDataObject(currentOwnCopy);
             }
@@ -78,6 +84,11 @@ namespace OneClickCopy
                 lastClipboardEditor = new ClipboardEditor();
                 SetClipboardEditorCommon();
                 lastClipboardEditor.ClipboardEditorContent = currentOwnCopy;
+
+                foreach (string nowFormat in currentOwnCopy.GetFormats(false))
+                {
+                    Debug.WriteLine("Can be : " + nowFormat);
+                }   //test
             }
         }
 
@@ -92,36 +103,34 @@ namespace OneClickCopy
             
             foreach(string nowFormat in currentClipboardData.GetFormats())
             {
-                try
-                {
-#if DEBUG
-                    Debug.WriteLine("Copying Format : " + nowFormat);
-#endif
-                    
-                    object nowCopyingData = currentClipboardData.GetData(nowFormat);
-
-#if DEBUG
-                    Debug.WriteLine("Contents : " + nowCopyingData);
-#endif
-
-                    if (nowCopyingData != null)
-                        currentOwnCopy.SetData(nowFormat, nowCopyingData);
-                }
-                catch (System.Runtime.InteropServices.COMException comException) {
-                    Debug.WriteLine("Skipped Data : " + nowFormat);
-                    Debug.WriteLine("HResult : {0:X}, Message : {1}", comException.HResult, comException.Message);
-                }
+                Debug.WriteLine("Can be : " + nowFormat);
+                object nowCopyingData = currentClipboardData.GetData(nowFormat);
+                Debug.WriteLine("Contents : " + nowCopyingData);
+                if (nowCopyingData != null)
+                    currentOwnCopy.SetData(nowFormat, nowCopyingData);
             }
+
+            byte[] bytes = null;
+
+            var binarySerializer = new BinaryFormatter();
+            var serializedOwnCopy = binarySerializer.Serialize((new SerializableDataObject(currentOwnCopy)));
         }
 
-        public void OnClipboardEditorByEditButton(object sender, EventArgs _)
+        public void OnOffClipboardEditorByEditButton(object sender, EventArgs _)
         {
-            IsEditting = false;
-            lastClipboardEditor = new ClipboardEditor(EditButton);
-            SetClipboardEditorCommon();
+            if (IsEditting)
+            {
 
-            if(HasOwnCopy)
-                lastClipboardEditor.ClipboardEditorContent = currentOwnCopy;
+            }
+            else
+            {
+                IsEditting = false;
+                lastClipboardEditor = new ClipboardEditor(EditButton);
+                SetClipboardEditorCommon();
+
+                if(HasOwnCopy)
+                    lastClipboardEditor.ClipboardEditorContent = currentOwnCopy;
+            }
         }
 
         private void SetClipboardEditorCommon()
@@ -155,11 +164,11 @@ namespace OneClickCopy
                 IsEditting = false;
         }
 
-        /*public void SetOwnCopyPersisted(object sender, EventArgs e)
+        public void SetOwnCopyPersisted(object sender, EventArgs e)
         {
             Debug.WriteLine("Unloaded! state : " + Clipboard.IsCurrent(currentOwnCopy));
             if (HasOwnCopy && Clipboard.IsCurrent(currentOwnCopy))
                 Clipboard.SetDataObject(currentOwnCopy, true);
-        }*/
+        }
     }
 }
