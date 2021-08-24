@@ -9,10 +9,10 @@ namespace OneClickCopy
 {
     public class ClipboardLineList
     {
-        private List<ClipboardLinePanel> clipboardLineList = new List<ClipboardLinePanel>();
+        private List<OwnCopyLinePanel> clipboardLineList = new List<OwnCopyLinePanel>();
         private int minimumLine = 1;
 
-        public List<ClipboardLinePanel> ClipboardLines { get => clipboardLineList; }
+        public List<OwnCopyLinePanel> ClipboardLines { get => clipboardLineList; }
 
         public ClipboardLineList() =>
             InitializeList();
@@ -20,7 +20,7 @@ namespace OneClickCopy
         private void InitializeList()
         {
             for (int i = 0; i < minimumLine; i++)
-                clipboardLineList.Add(new ClipboardLinePanel());
+                clipboardLineList.Add(new OwnCopyLinePanel());
         }
     }
 }

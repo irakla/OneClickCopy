@@ -20,38 +20,50 @@ using System.Windows.Shapes;
 
 namespace OneClickCopy
 {
-    /// <summary>
-    /// ClipboardLinePanel.xaml에 대한 상호 작용 논리
-    /// </summary>
-    public partial class ClipboardLinePanel : Grid
+    public partial class OwnCopyLinePanel : Grid
     {
-        private bool isEdittingClipboardContent = false;
-        private ClipboardEditor lastClipboardEditor = null;
+        private bool isEdittingOwnCopyContent = false;
+        private OwnCopyInfoPopup lastOwnCopyInfoPopup= null;
         private DataObject currentOwnCopy = null;
 
         public bool IsEditting
         {
-            get => isEdittingClipboardContent;
+            get => isEdittingOwnCopyContent;
             set
             {
-                isEdittingClipboardContent = value;
+                isEdittingOwnCopyContent = value;
 
-                if (isEdittingClipboardContent)
+                if (isEdittingOwnCopyContent)
                 {
                     EditButton.Style = (Style)Resources["EdittingLineButton"];
                 }
                 else
                 {
                     EditButton.Style = (Style)Resources["DefaultLineButton"];
-                    if (lastClipboardEditor != null)
-                        lastClipboardEditor.IsOpen = false;
+                    if (lastOwnCopyInfoPopup != null)
+                        lastOwnCopyInfoPopup.IsOpen = false;
                 }
             }
         }
 
-        public bool HasOwnCopy { get => currentOwnCopy != null; }
+        private DataObject OwnCopy
+        {
+            get => currentOwnCopy;
+            set
+            {
+                currentOwnCopy = value;
 
-        public ClipboardLinePanel()
+                if (HasOwnCopy)
+                    CopyButton.Style = (Style)Resources["HasOwnCopyStyle"];
+                else
+                    CopyButton.Style = (Style)Resources["DefaultLineButton"];
+            }
+        }
+
+        public bool HasOwnCopy
+        { get => (currentOwnCopy != null) && (currentOwnCopy.GetFormats().Length != 0); }
+
+        public OwnCopyLinePanel()
         {
             InitializeComponent();
         }
@@ -61,11 +73,11 @@ namespace OneClickCopy
             if (HasOwnCopy)
             {
                 Clipboard.Clear();
-                Clipboard.SetDataObject(currentOwnCopy);
+                Clipboard.SetDataObject(OwnCopy);
             }
         }
 
-        public void OnClipboardEditorByCopyButton(object sender, MouseEventArgs mouseEvent)
+        public void OpenInfoPopupByCopyButton(object sender, MouseEventArgs mouseEvent)
         {
             IsEditting = false;
 
@@ -75,20 +87,20 @@ namespace OneClickCopy
 
             if (HasOwnCopy)
             {
-                lastClipboardEditor = new ClipboardEditor();
-                SetClipboardEditorCommon();
-                lastClipboardEditor.ClipboardEditorContent = currentOwnCopy;
+                lastOwnCopyInfoPopup = new OwnCopyInfoPopup();
+                SetCopyInfoPopupCommon();
+                lastOwnCopyInfoPopup.OwnCopyInfoPopupContent = OwnCopy;
             }
         }
 
         private void CopyFromSystemClipboard()
         {
-            bool TheCopiesAreEqual = HasOwnCopy && Clipboard.IsCurrent(currentOwnCopy);
+            bool TheCopiesAreEqual = HasOwnCopy && Clipboard.IsCurrent(OwnCopy);
             if (TheCopiesAreEqual)
                 return;
 
             IDataObject currentClipboardData = Clipboard.GetDataObject();
-            currentOwnCopy = new DataObject();
+            OwnCopy = new DataObject();
             
             foreach(string nowFormat in currentClipboardData.GetFormats())
             {
@@ -105,61 +117,61 @@ namespace OneClickCopy
 #endif
 
                     if (nowCopyingData != null)
-                        currentOwnCopy.SetData(nowFormat, nowCopyingData);
+                        OwnCopy.SetData(nowFormat, nowCopyingData);
                 }
                 catch (System.Runtime.InteropServices.COMException comException) {
-                    Debug.WriteLine("Skipped Data : " + nowFormat);
-                    Debug.WriteLine("HResult : {0:X}, Message : {1}", comException.HResult, comException.Message);
+                    Console.WriteLine("Skipped Data : " + nowFormat);
+                    Console.WriteLine("HResult : {0:X}, Message : {1}", comException.HResult, comException.Message);
                 }
             }
         }
 
-        public void OnClipboardEditorByEditButton(object sender, EventArgs _)
+        public void OnOwnCopyInfoPopupByEditButton(object sender, EventArgs _)
         {
             IsEditting = false;
-            lastClipboardEditor = new ClipboardEditor(EditButton);
-            SetClipboardEditorCommon();
+            lastOwnCopyInfoPopup = new OwnCopyInfoPopup(EditButton);
+            SetCopyInfoPopupCommon();
 
             if(HasOwnCopy)
-                lastClipboardEditor.ClipboardEditorContent = currentOwnCopy;
+                lastOwnCopyInfoPopup.OwnCopyInfoPopupContent = OwnCopy;
         }
 
-        private void SetClipboardEditorCommon()
+        private void SetCopyInfoPopupCommon()
         {
             IsEditting = true;
 
             BindTitleTextControls();
 
-            if (lastClipboardEditor != null)
+            if (lastOwnCopyInfoPopup != null)
             {
-                lastClipboardEditor.Closed += ReportSelfClose;
+                lastOwnCopyInfoPopup.Closed += ReportSelfClose;
             }
         }
 
         private void BindTitleTextControls()
         {
             var titleBinding = new Binding("Text");
-            var bindingTitleTextBox = lastClipboardEditor.TitleTextBox;
-            bindingTitleTextBox.Text = ClipboardTitleText.Text;
+            var bindingTitleTextBox = lastOwnCopyInfoPopup.TitleTextBox;
+            bindingTitleTextBox.Text = OwnCopyTitleText.Text;
 
             titleBinding.Source = bindingTitleTextBox;
             titleBinding.Mode = BindingMode.OneWay;
             titleBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
 
-            BindingOperations.SetBinding(ClipboardTitleText, TextBlock.TextProperty, titleBinding);
+            BindingOperations.SetBinding(OwnCopyTitleText, TextBlock.TextProperty, titleBinding);
         }
 
         private void ReportSelfClose(object reporter, EventArgs e)
         {
-            if (reporter == lastClipboardEditor)
+            if (reporter == lastOwnCopyInfoPopup)
                 IsEditting = false;
         }
 
         /*public void SetOwnCopyPersisted(object sender, EventArgs e)
         {
-            Debug.WriteLine("Unloaded! state : " + Clipboard.IsCurrent(currentOwnCopy));
-            if (HasOwnCopy && Clipboard.IsCurrent(currentOwnCopy))
-                Clipboard.SetDataObject(currentOwnCopy, true);
+            Debug.WriteLine("Unloaded! state : " + Clipboard.IsCurrent(OwnCopy));
+            if (HasOwnCopy && Clipboard.IsCurrent(OwnCopy))
+                Clipboard.SetDataObject(OwnCopy, true);
         }*/
     }
 }

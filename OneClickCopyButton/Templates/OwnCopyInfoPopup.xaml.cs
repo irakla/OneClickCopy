@@ -17,37 +17,22 @@ using System.Windows.Shapes;
 
 namespace OneClickCopy.Templates
 {
-    /// <summary>
-    /// ClipboardEditor.xaml에 대한 상호 작용 논리
-    /// </summary>
-    public partial class ClipboardEditor : Popup
+    public partial class OwnCopyInfoPopup : Popup
     {
         private bool isBinaryData = false;
-        private IDataObject nowEditorClipboardData = null;
+        private IDataObject nowOwnCopyData = null;
 
         private Window currentMainWindow =Application.Current.MainWindow;
 
-        public IDataObject ClipboardEditorContent
+        public IDataObject OwnCopyInfoPopupContent
         {
             set
             {
-                nowEditorClipboardData = value;
+                nowOwnCopyData = value;
 
-                if(ClipboardContentLabel.Content is TextBox)
+                if(OwnCopyContentLabel.Content is TextBox)
                 {
-                    TextBox nowTextBox = (TextBox)ClipboardContentLabel.Content;
-
-                    /*foreach(string nowFormat in value.GetFormats())
-                    {
-                        if (nowFormat == DataFormats.Text ||
-                            nowFormat == DataFormats.OemText ||
-                            nowFormat == DataFormats.UnicodeText
-                            )
-                        {
-                            nowTextBox.Text += nowFormat + " : ";
-                            nowTextBox.Text += (string)value.GetData(nowFormat) + '\n';
-                        }
-                    }*/
+                    TextBox nowTextBox = (TextBox)OwnCopyContentLabel.Content;
 
                     if (value.GetFormats().Contains<string>(DataFormats.Text))
                         nowTextBox.Text += (string)value.GetData(DataFormats.Text);
@@ -55,30 +40,30 @@ namespace OneClickCopy.Templates
             }
         }
 
-        public ClipboardEditor()
+        public OwnCopyInfoPopup()
         {
             InitializeComponent();
 
             this.Placement = PlacementMode.MousePoint;
 
-            OpenEditor();
+            OpenInfoPopup();
         }
 
-        public ClipboardEditor(UIElement placementTarget)
+        public OwnCopyInfoPopup(UIElement placementTarget)
         {
             InitializeComponent();
 
             this.PlacementTarget = placementTarget;
 
-            OpenEditor();
+            OpenInfoPopup();
         }
 
-        private void OpenEditor()
+        private void OpenInfoPopup()
         {
             IsOpen = true;
             StaysOpen = true;
 
-            SubscribeEventsClosingEditor();
+            SubscribeEventsClosingInfoPopup();
 
             if (isBinaryData)
                 ;//TODO : Draw the binary data in label
@@ -87,12 +72,16 @@ namespace OneClickCopy.Templates
                 TextBox txtboxCopyingContent = new TextBox();
                 txtboxCopyingContent.HorizontalAlignment = HorizontalAlignment.Stretch;
                 txtboxCopyingContent.MinLines = 3;
-                ClipboardContentLabel.Content = txtboxCopyingContent;
-                txtboxCopyingContent.Focus();
+                txtboxCopyingContent.IsReadOnly = true;
+                txtboxCopyingContent.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+                txtboxCopyingContent.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+                OwnCopyContentLabel.Content = txtboxCopyingContent;
             }
+
+            TitleTextBox.Focus();
         }
 
-        private void CloseEditor(object sender, EventArgs e)
+        private void CloseInfoPopup(object sender, EventArgs e)
         {
             if (IsMouseOver)
                 return;
@@ -100,28 +89,30 @@ namespace OneClickCopy.Templates
             BindingOperations.ClearBinding(TitleTextBox, TextBlock.TextProperty);
             IsOpen = false;
 
+#if DEBUG
             if (e is RoutedEventArgs)
-                Debug.WriteLine("LostFocus!");
+                Debug.WriteLine("Popup LostFocus!");
             if (e is MouseButtonEventArgs)
                 Debug.WriteLine("MouseDown!");
-                
-            UnsubscribeEventsClosingEditor();
+#endif
+
+            UnsubscribeEventsClosingInfoPopup();
         }
 
-        private void SubscribeEventsClosingEditor()
+        private void SubscribeEventsClosingInfoPopup()
         {
-            LostFocus += CloseEditor;
-            currentMainWindow.Deactivated += CloseEditor;
-            currentMainWindow.PreviewMouseDown += CloseEditor;
-            currentMainWindow.PreviewMouseRightButtonDown += CloseEditor;
+            LostFocus += CloseInfoPopup;
+            currentMainWindow.Deactivated += CloseInfoPopup;
+            currentMainWindow.PreviewMouseDown += CloseInfoPopup;
+            currentMainWindow.PreviewMouseRightButtonDown += CloseInfoPopup;
         }
 
-        private void UnsubscribeEventsClosingEditor()
+        private void UnsubscribeEventsClosingInfoPopup()
         {
-            LostFocus -= CloseEditor;
-            currentMainWindow.Deactivated -= CloseEditor;
-            currentMainWindow.PreviewMouseDown -= CloseEditor;
-            currentMainWindow.PreviewMouseRightButtonDown -= CloseEditor;
+            LostFocus -= CloseInfoPopup;
+            currentMainWindow.Deactivated -= CloseInfoPopup;
+            currentMainWindow.PreviewMouseDown -= CloseInfoPopup;
+            currentMainWindow.PreviewMouseRightButtonDown -= CloseInfoPopup;
         }
 
         private void MouseTest(object sender, MouseEventArgs e)
@@ -134,7 +125,7 @@ namespace OneClickCopy.Templates
             Debug.WriteLine("I think This Window Lost focus");
         }
 
-        ~ClipboardEditor()
+        ~OwnCopyInfoPopup()
         {
             Debug.WriteLine("It's Dead");
         }

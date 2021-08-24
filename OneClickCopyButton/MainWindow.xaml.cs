@@ -139,7 +139,7 @@ namespace OneClickCopy
             ApplyBeforeWindowSettings();
 
             //TODO : 클립보드 세팅 로드 및 적용
-            foreach (ClipboardLinePanel nowClipboardLine in
+            foreach (OwnCopyLinePanel nowClipboardLine in
                 showingClipboardLineList.ClipboardLines)
             {
                 ClipboardLineListPanel.Children.Add(nowClipboardLine);

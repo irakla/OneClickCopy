@@ -59,18 +59,18 @@
     </ApplicationDefinition>
     <Compile Include="ClipboardData.cs" />
     <Compile Include="ClipboardLineList.cs" />
-    <Compile Include="Templates\ClipboardEditor.xaml.cs">
-      <DependentUpon>ClipboardEditor.xaml</DependentUpon>
+    <Compile Include="Templates\OwnCopyInfoPopup.xaml.cs">
+      <DependentUpon>OwnCopyInfoPopup.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Templates\ClipboardLinePanel.xaml.cs">
-      <DependentUpon>ClipboardLinePanel.xaml</DependentUpon>
+    <Compile Include="Templates\OwnCopyLinePanel.xaml.cs">
+      <DependentUpon>OwnCopyLinePanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainWindowSettingsController.cs" />
-    <Page Include="Templates\ClipboardEditor.xaml">
+    <Page Include="Templates\OwnCopyInfoPopup.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Templates\ClipboardLinePanel.xaml">
+    <Page Include="Templates\OwnCopyLinePanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
