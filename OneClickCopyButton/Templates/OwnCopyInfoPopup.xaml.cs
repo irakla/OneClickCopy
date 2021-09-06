@@ -64,21 +64,22 @@ namespace OneClickCopy.Templates
             StaysOpen = true;
 
             SubscribeEventsClosingInfoPopup();
-
-            if (isBinaryData)
-                ;//TODO : Draw the binary data in label
-            else
-            {
-                TextBox txtboxCopyingContent = new TextBox();
-                txtboxCopyingContent.HorizontalAlignment = HorizontalAlignment.Stretch;
-                txtboxCopyingContent.MinLines = 3;
-                txtboxCopyingContent.IsReadOnly = true;
-                txtboxCopyingContent.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
-                txtboxCopyingContent.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
-                OwnCopyContentLabel.Content = txtboxCopyingContent;
-            }
+            
+            ShowTextContent();
 
             TitleTextBox.Focus();
+            TitleTextBox.SelectAll();
+        }
+
+        private void ShowTextContent()
+        {
+            TextBox txtboxCopyingContent = new TextBox();
+            txtboxCopyingContent.HorizontalAlignment = HorizontalAlignment.Stretch;
+            txtboxCopyingContent.MinLines = 3;
+            txtboxCopyingContent.IsReadOnly = true;
+            txtboxCopyingContent.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+            txtboxCopyingContent.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+            OwnCopyContentLabel.Content = txtboxCopyingContent;
         }
 
         private void CloseInfoPopup(object sender, EventArgs e)

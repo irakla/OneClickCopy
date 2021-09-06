@@ -57,11 +57,15 @@ namespace OneClickCopy
                     CopyButton.Style = (Style)Resources["HasOwnCopyStyle"];
                 else
                     CopyButton.Style = (Style)Resources["DefaultLineButton"];
+
+                if (HasOwnCopy)
+                    Debug.WriteLine("Style changed to HasOwnCopyStyle");
             }
         }
 
         public bool HasOwnCopy
-        { get => (currentOwnCopy != null) && (currentOwnCopy.GetFormats().Length != 0); }
+        { get => (currentOwnCopy != null) 
+                && (currentOwnCopy.GetFormats().Length != 0); }
 
         public OwnCopyLinePanel()
         {
@@ -100,7 +104,11 @@ namespace OneClickCopy
                 return;
 
             IDataObject currentClipboardData = Clipboard.GetDataObject();
-            OwnCopy = new DataObject();
+
+            if (currentClipboardData.GetFormats().Length == 0)
+                return;
+
+            DataObject newCopy = new DataObject();
             
             foreach(string nowFormat in currentClipboardData.GetFormats())
             {
@@ -117,13 +125,15 @@ namespace OneClickCopy
 #endif
 
                     if (nowCopyingData != null)
-                        OwnCopy.SetData(nowFormat, nowCopyingData);
+                        newCopy.SetData(nowFormat, nowCopyingData);
                 }
                 catch (System.Runtime.InteropServices.COMException comException) {
                     Console.WriteLine("Skipped Data : " + nowFormat);
                     Console.WriteLine("HResult : {0:X}, Message : {1}", comException.HResult, comException.Message);
                 }
             }
+
+            OwnCopy = newCopy;
         }
 
         public void OnOwnCopyInfoPopupByEditButton(object sender, EventArgs _)
@@ -140,10 +150,9 @@ namespace OneClickCopy
         {
             IsEditting = true;
 
-            BindTitleTextControls();
-
             if (lastOwnCopyInfoPopup != null)
             {
+                BindTitleTextControls();
                 lastOwnCopyInfoPopup.Closed += ReportSelfClose;
             }
         }

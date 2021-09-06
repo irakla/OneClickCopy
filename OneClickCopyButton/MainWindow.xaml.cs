@@ -14,6 +14,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
@@ -29,6 +30,9 @@ namespace OneClickCopy
 
         private SettingsFileEntry settingsFileEntry;
         private MainWindowSettingsController mainWindowSettingsController;
+
+        private Storyboard storyboardOpacityToThick = null;
+        private DoubleAnimation animationOpacityToThick;
 
         private bool IsReadyMainWindowSettingController
         {
@@ -104,7 +108,7 @@ namespace OneClickCopy
                 if (value > 1.0)
                     sliderOpacityAtMouseLeaving.Value = 1.0;
                 else if (value < 0)
-                    sliderOpacityAtMouseLeaving.Value = 0;
+                    sliderOpacityAtMouseLeaving.Value = 0.1;
                 else
                     sliderOpacityAtMouseLeaving.Value = value;
 
@@ -152,6 +156,19 @@ namespace OneClickCopy
                 ClipboardLineListPanel.MinWidth = calculatedMinWidth;
                 MinWidth = calculatedMinWidth;
             }
+
+            storyboardOpacityToThick = new Storyboard();
+
+            animationOpacityToThick = new DoubleAnimation();
+            animationOpacityToThick.To = 1;
+            animationOpacityToThick.From = OpacityAtMouseLeaving;
+            animationOpacityToThick.Duration = new Duration(TimeSpan.FromMilliseconds(750));
+            animationOpacityToThick.FillBehavior = FillBehavior.Stop;
+
+            Storyboard.SetTargetName(animationOpacityToThick, Name);
+            Storyboard.SetTargetProperty(animationOpacityToThick, new PropertyPath(Window.OpacityProperty));
+
+            storyboardOpacityToThick.Children.Add(animationOpacityToThick);
         }
 
         private bool LoadBeforeSettings()
@@ -216,13 +233,20 @@ namespace OneClickCopy
         {
             if (!CanBeTransparent)
                 return;
-            
+
             if (!IsMouseOverAtThisMoment())
+            {
+                storyboardOpacityToThick?.Resume();
                 Opacity = sliderOpacityAtMouseLeaving.Value;
+            }
         }
         
         private void MakeWindowThick(object sender, RoutedEventArgs e)
         {
+            //Opacity = 1;
+
+            storyboardOpacityToThick?.Begin(this, true);
+
             Opacity = 1;
         }
 
@@ -230,27 +254,35 @@ namespace OneClickCopy
         {
             Dispatcher.BeginInvoke((Action)(() =>
             {
-                if (
+                /*if (
                     checkboxCanBeTransparent?.IsChecked != null &&
                     (bool)checkboxCanBeTransparent.IsChecked
                     )
                 {
-                    if (IsMouseOverAtThisMoment())
-                        Opacity = 1;
-                    else
                         Opacity = sliderOpacityAtMouseLeaving.Value;
-                }
+                }*/
+
+                Opacity = sliderOpacityAtMouseLeaving.Value;
             }));
         }
 
         private void IsFixedOpacitySlide(object sender, RoutedEventArgs e)
         {
             OpacityAtMouseLeaving = sliderOpacityAtMouseLeaving.Value;
+
+            if (
+                (checkboxCanBeTransparent?.IsChecked != null &&
+                (bool)checkboxCanBeTransparent.IsChecked) &&
+                !IsMouseOverAtThisMoment()
+                )
+                Opacity = sliderOpacityAtMouseLeaving.Value;
+            else
+                Opacity = 1;
         }
 
         private void IsFixedOpacitySlideByKey(object sender, KeyEventArgs e)
         {
-            if(e.Key == Key.Left || e.Key == Key.Right)
+            if(e.Key == Key.Left || e.Key == Key.Right || e.Key == Key.Up || e.Key == Key.Down)
                 OpacityAtMouseLeaving = sliderOpacityAtMouseLeaving.Value;
         }
 
