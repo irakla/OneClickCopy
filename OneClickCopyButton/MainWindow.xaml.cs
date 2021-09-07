@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -31,8 +32,9 @@ namespace OneClickCopy
         private SettingsFileEntry settingsFileEntry;
         private MainWindowSettingsController mainWindowSettingsController;
 
-        private Storyboard storyboardOpacityToThick = null;
-        private DoubleAnimation animationOpacityToThick;
+        private Storyboard storyboardOpacityFadeInOut = null;
+        private DoubleAnimation animationOpacityToThick = null;
+        private DoubleAnimation animationOpacityToTransparent = null;
 
         private bool IsReadyMainWindowSettingController
         {
@@ -107,15 +109,23 @@ namespace OneClickCopy
             {
                 if (value > 1.0)
                     sliderOpacityAtMouseLeaving.Value = 1.0;
-                else if (value < 0)
-                    sliderOpacityAtMouseLeaving.Value = 0.1;
+                else if (value < sliderOpacityAtMouseLeaving.Minimum)
+                    sliderOpacityAtMouseLeaving.Value = sliderOpacityAtMouseLeaving.Minimum;
                 else
                     sliderOpacityAtMouseLeaving.Value = value;
 
+                if(animationOpacityToTransparent != null)
+                    animationOpacityToTransparent.To = value;
                 if (IsReadyMainWindowSettingController)
                     mainWindowSettingsController.SetOpacityAtMouseLeaving(value);
             }
         }
+
+        public int MilliDurationFullOpacityAnimation
+        {
+            get;
+            private set;
+        } = 250;
 
         public MainWindow()
         {
@@ -139,7 +149,7 @@ namespace OneClickCopy
 
             if (!isSuccessfulLoadingSettings)
                 return;
-            
+
             ApplyBeforeWindowSettings();
 
             //TODO : 클립보드 세팅 로드 및 적용
@@ -157,18 +167,7 @@ namespace OneClickCopy
                 MinWidth = calculatedMinWidth;
             }
 
-            storyboardOpacityToThick = new Storyboard();
-
-            animationOpacityToThick = new DoubleAnimation();
-            animationOpacityToThick.To = 1;
-            animationOpacityToThick.From = OpacityAtMouseLeaving;
-            animationOpacityToThick.Duration = new Duration(TimeSpan.FromMilliseconds(750));
-            animationOpacityToThick.FillBehavior = FillBehavior.Stop;
-
-            Storyboard.SetTargetName(animationOpacityToThick, Name);
-            Storyboard.SetTargetProperty(animationOpacityToThick, new PropertyPath(Window.OpacityProperty));
-
-            storyboardOpacityToThick.Children.Add(animationOpacityToThick);
+            InitializeFadeInOutAnimation();
         }
 
         private bool LoadBeforeSettings()
@@ -205,6 +204,24 @@ namespace OneClickCopy
             }
         }
 
+        private void InitializeFadeInOutAnimation()
+        {
+            storyboardOpacityFadeInOut = new Storyboard();
+
+            animationOpacityToThick = new DoubleAnimation();
+            animationOpacityToThick.To = 1;
+            animationOpacityToThick.FillBehavior = FillBehavior.HoldEnd;
+
+            animationOpacityToTransparent = new DoubleAnimation();
+            animationOpacityToTransparent.To = OpacityAtMouseLeaving;
+            animationOpacityToTransparent.FillBehavior = FillBehavior.HoldEnd;
+
+            Storyboard.SetTargetName(animationOpacityToThick, Name);
+            Storyboard.SetTargetProperty(animationOpacityToThick, new PropertyPath(Window.OpacityProperty));
+            Storyboard.SetTargetName(animationOpacityToTransparent, Name);
+            Storyboard.SetTargetProperty(animationOpacityToTransparent, new PropertyPath(Window.OpacityProperty));
+        }
+
         private void SetWindowConstraintsWithElements(object sender, RoutedEventArgs e)
         {
             MinWidth = CustomTitleBar.ActualWidth;
@@ -236,32 +253,37 @@ namespace OneClickCopy
 
             if (!IsMouseOverAtThisMoment())
             {
-                storyboardOpacityToThick?.Resume();
-                Opacity = sliderOpacityAtMouseLeaving.Value;
+                if(storyboardOpacityFadeInOut != null && OpacityAtMouseLeaving != 1)
+                {
+                    int milliDurationToTransparent = (int)(MilliDurationFullOpacityAnimation * (Opacity - OpacityAtMouseLeaving) / (1 - OpacityAtMouseLeaving));
+                    animationOpacityToTransparent.Duration = new Duration(TimeSpan.FromMilliseconds(milliDurationToTransparent));
+                    
+                    storyboardOpacityFadeInOut.Children.Clear();
+                    storyboardOpacityFadeInOut.Children.Add(animationOpacityToTransparent);
+                    storyboardOpacityFadeInOut.Begin(this, true);
+                }
             }
         }
         
         private void MakeWindowThick(object sender, RoutedEventArgs e)
         {
-            //Opacity = 1;
+            if (storyboardOpacityFadeInOut != null && OpacityAtMouseLeaving != 1)
+            {
+                int milliDurationToThick = (int)(MilliDurationFullOpacityAnimation * (1 - Opacity) / (1 - OpacityAtMouseLeaving));
+                animationOpacityToThick.Duration = new Duration(TimeSpan.FromMilliseconds(milliDurationToThick));
 
-            storyboardOpacityToThick?.Begin(this, true);
-
-            Opacity = 1;
+                storyboardOpacityFadeInOut.Children.Clear();
+                storyboardOpacityFadeInOut.Children.Add(animationOpacityToThick);
+                storyboardOpacityFadeInOut.Begin(this, true);
+            }
         }
 
         private void IsChangedOpacitySlide(object sender, RoutedEventArgs e)
         {
+            storyboardOpacityFadeInOut?.Remove(this);
+
             Dispatcher.BeginInvoke((Action)(() =>
             {
-                /*if (
-                    checkboxCanBeTransparent?.IsChecked != null &&
-                    (bool)checkboxCanBeTransparent.IsChecked
-                    )
-                {
-                        Opacity = sliderOpacityAtMouseLeaving.Value;
-                }*/
-
                 Opacity = sliderOpacityAtMouseLeaving.Value;
             }));
         }
