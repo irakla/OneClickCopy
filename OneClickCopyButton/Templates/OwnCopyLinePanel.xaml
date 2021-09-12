@@ -92,7 +92,7 @@
     </Button>
 
     <Button Grid.Column="1" Style="{StaticResource DefaultLineButton}" x:Name="EditButton"
-            Click="OnOwnCopyInfoPopupByEditButton">
+            Click="OpenInfoPopupByEditButton">
         <Canvas>
             <Line
                 X1="3" Y1="35"

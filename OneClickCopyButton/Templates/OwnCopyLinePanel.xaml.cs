@@ -94,6 +94,7 @@ namespace OneClickCopy
                 lastOwnCopyInfoPopup = new OwnCopyInfoPopup();
                 SetCopyInfoPopupCommon();
                 lastOwnCopyInfoPopup.OwnCopyInfoPopupContent = OwnCopy;
+                lastOwnCopyInfoPopup.SetTitleFromData();
             }
         }
 
@@ -136,10 +137,11 @@ namespace OneClickCopy
             OwnCopy = newCopy;
         }
 
-        public void OnOwnCopyInfoPopupByEditButton(object sender, EventArgs _)
+        public void OpenInfoPopupByEditButton(object sender, EventArgs _)
         {
             IsEditting = false;
             lastOwnCopyInfoPopup = new OwnCopyInfoPopup(EditButton);
+            lastOwnCopyInfoPopup.TitleTextBox.Text = OwnCopyTitleText.Text;
             SetCopyInfoPopupCommon();
 
             if(HasOwnCopy)
@@ -161,7 +163,6 @@ namespace OneClickCopy
         {
             var titleBinding = new Binding("Text");
             var bindingTitleTextBox = lastOwnCopyInfoPopup.TitleTextBox;
-            bindingTitleTextBox.Text = OwnCopyTitleText.Text;
 
             titleBinding.Source = bindingTitleTextBox;
             titleBinding.Mode = BindingMode.OneWay;

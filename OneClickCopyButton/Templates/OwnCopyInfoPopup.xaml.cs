@@ -19,23 +19,33 @@ namespace OneClickCopy.Templates
 {
     public partial class OwnCopyInfoPopup : Popup
     {
-        private bool isBinaryData = false;
         private IDataObject nowOwnCopyData = null;
 
         private Window currentMainWindow =Application.Current.MainWindow;
 
+        public bool HasTextData
+        {
+            get
+            {
+                return nowOwnCopyData != null ?
+                    nowOwnCopyData.GetFormats().Contains(DataFormats.Text) : false;
+            }
+        }
+
         public IDataObject OwnCopyInfoPopupContent
         {
+            get => nowOwnCopyData;
             set
             {
                 nowOwnCopyData = value;
 
-                if(OwnCopyContentLabel.Content is TextBox)
+                if (HasTextData)
                 {
-                    TextBox nowTextBox = (TextBox)OwnCopyContentLabel.Content;
-
-                    if (value.GetFormats().Contains<string>(DataFormats.Text))
+                    if (OwnCopyContentLabel.Content is TextBox)
+                    {
+                        TextBox nowTextBox = (TextBox)OwnCopyContentLabel.Content;
                         nowTextBox.Text += (string)value.GetData(DataFormats.Text);
+                    }
                 }
             }
         }
@@ -56,6 +66,17 @@ namespace OneClickCopy.Templates
             this.PlacementTarget = placementTarget;
 
             OpenInfoPopup();
+        }
+
+        public void SetTitleFromData()
+        {
+            if (HasTextData)
+            {
+                string dataText = (string)OwnCopyInfoPopupContent.GetData(DataFormats.Text);
+                TitleTextBox.Text = dataText.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)[0].Trim('\n');
+                Debug.WriteLine("TitleTextBox.Text : " + TitleTextBox.Text + "And Test");
+                TitleTextBox.SelectAll();
+            }
         }
 
         private void OpenInfoPopup()
@@ -89,13 +110,6 @@ namespace OneClickCopy.Templates
 
             BindingOperations.ClearBinding(TitleTextBox, TextBlock.TextProperty);
             IsOpen = false;
-
-#if DEBUG
-            if (e is RoutedEventArgs)
-                Debug.WriteLine("Popup LostFocus!");
-            if (e is MouseButtonEventArgs)
-                Debug.WriteLine("MouseDown!");
-#endif
 
             UnsubscribeEventsClosingInfoPopup();
         }
