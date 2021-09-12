@@ -67,9 +67,31 @@ namespace OneClickCopy
         { get => (currentOwnCopy != null) 
                 && (currentOwnCopy.GetFormats().Length != 0); }
 
+        public bool IsFixedTitle
+        {
+            get => TitleFixingButton.IsChecked != null && (bool)TitleFixingButton.IsChecked;
+            set 
+            {
+                TitleFixingButton.IsChecked = value;
+
+                if (value)
+                    TitleFixingPinEdge.Visibility = Visibility.Visible;
+                else
+                    TitleFixingPinEdge.Visibility = Visibility.Hidden;
+            }
+        }
+
         public OwnCopyLinePanel()
         {
             InitializeComponent();
+        }
+
+        public void ToggleTitleFixingButton(object sender, EventArgs e)
+        {
+            if(IsFixedTitle)
+                TitleFixingPinEdge.Visibility = Visibility.Visible;
+            else
+                TitleFixingPinEdge.Visibility = Visibility.Hidden;
         }
 
         public void CopyToSystemClipboard(object sender, EventArgs e)
@@ -92,9 +114,14 @@ namespace OneClickCopy
             if (HasOwnCopy)
             {
                 lastOwnCopyInfoPopup = new OwnCopyInfoPopup();
-                SetCopyInfoPopupCommon();
                 lastOwnCopyInfoPopup.OwnCopyInfoPopupContent = OwnCopy;
-                lastOwnCopyInfoPopup.SetTitleFromData();
+
+                if (IsFixedTitle)
+                    lastOwnCopyInfoPopup.TitleTextBox.Text = OwnCopyTitleText.Text;
+                else
+                    lastOwnCopyInfoPopup.SetTitleFromData();
+
+                SetCopyInfoPopupCommon();
             }
         }
 
@@ -155,7 +182,7 @@ namespace OneClickCopy
             if (lastOwnCopyInfoPopup != null)
             {
                 BindTitleTextControls();
-                lastOwnCopyInfoPopup.Closed += ReportSelfClose;
+                lastOwnCopyInfoPopup.Closed += ReportPopupClose;
             }
         }
 
@@ -171,7 +198,7 @@ namespace OneClickCopy
             BindingOperations.SetBinding(OwnCopyTitleText, TextBlock.TextProperty, titleBinding);
         }
 
-        private void ReportSelfClose(object reporter, EventArgs e)
+        private void ReportPopupClose(object reporter, EventArgs e)
         {
             if (reporter == lastOwnCopyInfoPopup)
                 IsEditting = false;

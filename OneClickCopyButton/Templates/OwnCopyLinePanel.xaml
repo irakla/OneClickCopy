@@ -10,25 +10,26 @@
       
       d:DesignWidth="400" d:DesignHeight="70">
     <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="20"/>
         <ColumnDefinition Width="*"/>
         <ColumnDefinition Width="40"/>
         <ColumnDefinition Width="40"/>
         <ColumnDefinition Width="40"/>
     </Grid.ColumnDefinitions>
     <Grid.Resources>
+        <SolidColorBrush x:Key="ButtonBorderBrush" Color="Black" />
+        <LinearGradientBrush x:Key="ButtonBackgroundBrush" StartPoint="0, 0" EndPoint="0,1">
+            <GradientStop Color="LightGray" Offset="0.0"/>
+            <GradientStop Color="WhiteSmoke" Offset="0.1"/>
+            <GradientStop Color="WhiteSmoke" Offset="0.75"/>
+            <GradientStop Color="Gray" Offset="1"/>
+        </LinearGradientBrush>
+
         <Style x:Key="DefaultLineButton" TargetType="{x:Type Button}">
             <Setter Property="Margin" Value="5, 10, 5, 10"/>
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
             <Setter Property="VerticalAlignment" Value="Stretch"/>
-            <Setter Property="Background">
-                <Setter.Value>
-                    <LinearGradientBrush StartPoint="0, 0" EndPoint="0,1">
-                        <GradientStop Color="LightGray" Offset="0.0"/>
-                        <GradientStop Color="WhiteSmoke" Offset="0.1"/>
-                        <GradientStop Color="WhiteSmoke" Offset="0.75"/>
-                        <GradientStop Color="Gray" Offset="1"/>
-                    </LinearGradientBrush>
-                </Setter.Value>
+            <Setter Property="Background" Value="{StaticResource ButtonBackgroundBrush}">
             </Setter>
             
             <Setter Property="Padding" Value="3"/>
@@ -36,8 +37,8 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Button}">
-                        <Border Name="ButtonBorder"
-                                CornerRadius="5" BorderThickness="1" BorderBrush="Black"
+                        <Border Name="ButtonBorder" 
+                                CornerRadius="5" BorderThickness="1" BorderBrush="{StaticResource ButtonBorderBrush}"
                                 Background="{TemplateBinding Background}" >
                             <ContentPresenter>
                                 
@@ -83,7 +84,26 @@
         </Style>
     </Grid.Resources>
 
-    <Button Grid.Column="0" Style="{StaticResource DefaultLineButton}" x:Name="CopyButton"
+    <ToggleButton Grid.Column="0" x:Name="TitleFixingButton"
+                  BorderThickness="0" Background="Transparent" IsChecked="False"
+                  Checked="ToggleTitleFixingButton" Unchecked="ToggleTitleFixingButton">
+        <Canvas HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Border Canvas.Left="-5" BorderBrush="{StaticResource ButtonBorderBrush}" BorderThickness="0.75"
+                    CornerRadius="2"
+                    Background="{StaticResource ButtonBackgroundBrush}">
+                <TextBlock FontSize="9">
+                    <Run>Title</Run>
+                </TextBlock>
+            </Border>
+            <Line X1="0" Y1="-8"
+                    X2="0" Y2="3"
+                    x:Name="TitleFixingPinEdge" Stroke="Red" StrokeThickness="1.5" Visibility="Hidden" />
+            <Polygon Points="-6,-20 -4,-18 -4,-10 -8,-6 8,-6 4,-10 4,-18 6,-20"
+                                         Fill="CadetBlue" />
+        </Canvas>
+    </ToggleButton>
+
+    <Button Grid.Column="1" Style="{StaticResource DefaultLineButton}" x:Name="CopyButton"
             Click="CopyToSystemClipboard"
             MouseRightButtonUp="OpenInfoPopupByCopyButton">
         <TextBlock x:Name="OwnCopyTitleText" 
@@ -91,7 +111,7 @@
                    Text="Empty" FontSize="15"/>
     </Button>
 
-    <Button Grid.Column="1" Style="{StaticResource DefaultLineButton}" x:Name="EditButton"
+    <Button Grid.Column="2" Style="{StaticResource DefaultLineButton}" x:Name="EditButton"
             Click="OpenInfoPopupByEditButton">
         <Canvas>
             <Line
@@ -113,7 +133,7 @@
         </Canvas>
     </Button>
 
-    <Button Grid.Column="2"  Style="{StaticResource DefaultLineButton}">
+    <Button Grid.Column="3"  Style="{StaticResource DefaultLineButton}">
         <Canvas HorizontalAlignment="Center" VerticalAlignment="Center">
             <Canvas.Resources>
                 <LinearGradientBrush x:Key="AddStrokeBrush">
@@ -133,7 +153,7 @@
         </Canvas>
     </Button>
 
-    <Button Grid.Column="3"  Style="{StaticResource DefaultLineButton}">
+    <Button Grid.Column="4"  Style="{StaticResource DefaultLineButton}">
         <Canvas HorizontalAlignment="Center" VerticalAlignment="Center">
             <Canvas.Resources>
                 <LinearGradientBrush x:Key="DeleteStrokeBrush">
