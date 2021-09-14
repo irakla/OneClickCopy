@@ -87,8 +87,30 @@
     <ToggleButton Grid.Column="0" x:Name="TitleFixingButton"
                   BorderThickness="0" Background="Transparent" IsChecked="False"
                   Checked="ToggleTitleFixingButton" Unchecked="ToggleTitleFixingButton">
+        <ToggleButton.Style>
+            <Style TargetType="ToggleButton">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ToggleButton">
+                            <Border Background="{TemplateBinding Background}">
+                                <ContentPresenter />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Effect">
+                                        <Setter.Value>
+                                            <DropShadowEffect BlurRadius="2" Direction="280" ShadowDepth="1"/>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </ToggleButton.Style>
         <Canvas HorizontalAlignment="Center" VerticalAlignment="Center">
-            <Border Canvas.Left="-5" BorderBrush="{StaticResource ButtonBorderBrush}" BorderThickness="0.75"
+            <Border Canvas.Left="-7" BorderBrush="{StaticResource ButtonBorderBrush}" BorderThickness="0.75"
                     CornerRadius="2"
                     Background="{StaticResource ButtonBackgroundBrush}">
                 <TextBlock FontSize="9">
