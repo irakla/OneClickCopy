@@ -5,7 +5,7 @@
        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
        xmlns:local="clr-namespace:OneClickCopy.Templates"
        mc:Ignorable="d"
-       Width="Auto" MinWidth="100" MouseDown="MouseTest"
+       Width="Auto" MinWidth="100" MouseDown="MouseTest" KeyDown="KeyInteraction"
        d:DesignHeight="450" d:DesignWidth="800">
     <Border BorderBrush="Black" BorderThickness="0.5" Background="LightBlue">
         <Grid x:Name="InfoPopupGrid">

@@ -112,6 +112,11 @@ namespace OneClickCopy.Templates
             if (IsMouseOver)
                 return;
 
+            EnterProcedurePopupClosing();
+        }
+
+        private void EnterProcedurePopupClosing()
+        {
             BindingOperations.ClearBinding(TitleTextBox, TextBlock.TextProperty);
             IsOpen = false;
 
@@ -132,6 +137,12 @@ namespace OneClickCopy.Templates
             currentMainWindow.Deactivated -= CloseInfoPopup;
             currentMainWindow.PreviewMouseDown -= CloseInfoPopup;
             currentMainWindow.PreviewMouseRightButtonDown -= CloseInfoPopup;
+        }
+
+        private void KeyInteraction(object sender, KeyEventArgs keyEvent)
+        {
+            if (keyEvent.Key == Key.Enter)
+                EnterProcedurePopupClosing();
         }
 
         private void MouseTest(object sender, MouseEventArgs e)
