@@ -27,7 +27,7 @@
         </Style>
     </Window.Style>
     <Border Name="background" BorderThickness="2" BorderBrush="LightGray">
-        <DockPanel>
+        <DockPanel x:Name="MainWindowDockPanel">
             <Border Name="TitleArea" DockPanel.Dock="Top" Height="32" BorderBrush="LightGray" BorderThickness="0.5">
                 <Grid>
                     <Label VerticalContentAlignment="Center" Margin="0,0,10,0" MouseDown="IsClickedForDrag">
@@ -131,7 +131,11 @@
                     </Grid>
                 </Grid>
             </Border>
-            <Grid>
+            
+            <Label x:Name="MessageSpace" DockPanel.Dock="Bottom" Height="40" Margin="5"
+                   Background="Transparent" HorizontalContentAlignment="Center"/>
+            
+            <Grid x:Name="ClipboardLineListBackground">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="1*"/>
                 </Grid.RowDefinitions>
@@ -139,16 +143,6 @@
                     <StackPanel x:Name="ClipboardLineListPanel" Orientation="Vertical"
                                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                                 Background="Transparent">
-                        <!--StackPanel.Resources>
-                            <Style x:Key="ButtonsMargin" TargetType="Button">
-                                <Setter Property="Margin" Value="15"/>
-                                <Setter Property="FontSize" Value="20"/>
-                                <Setter Property="Padding" Value="5" />
-                                <Setter Property="Content" Value="Empty" />
-                            </Style>
-                            <Style BasedOn="{StaticResource ButtonsMargin}" TargetType="Button"/>
-                        </StackPanel.Resources-->
-                        
                     </StackPanel>
                 </Grid>
                 

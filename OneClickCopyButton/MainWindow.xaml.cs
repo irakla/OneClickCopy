@@ -135,7 +135,19 @@ namespace OneClickCopy
             Loaded += SetWindowConstraintsWithElements;
         }
 
-        public void UpdatePinEdgeVisiblity()
+        public void LaunchToastNotification()
+        {
+            /*var newToast = new ToastNotification();
+            newToast.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
+            newToast.PlacementTarget = this;
+            newToast.IsOpen = true;*/
+
+            var testControl = new ToastNotification("TESTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT");
+
+            MessageSpace.Content = testControl;
+        }
+
+        private void UpdatePinEdgeVisiblity()
         {
             if (isPinnedTopmostButton)
                 PinEdge.Visibility = Visibility.Visible;
@@ -168,6 +180,7 @@ namespace OneClickCopy
             }
 
             InitializeFadeInOutAnimation();
+            LaunchToastNotification();
         }
 
         private bool LoadBeforeSettings()
