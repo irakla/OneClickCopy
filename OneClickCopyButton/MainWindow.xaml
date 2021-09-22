@@ -132,9 +132,6 @@
                 </Grid>
             </Border>
             
-            <Label x:Name="MessageSpace" DockPanel.Dock="Bottom" Height="40" Margin="5"
-                   Background="Transparent" HorizontalContentAlignment="Center"/>
-            
             <Grid x:Name="ClipboardLineListBackground">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="1*"/>
@@ -144,6 +141,9 @@
                                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                                 Background="Transparent">
                     </StackPanel>
+
+                    <local:ToastNotifier x:Name="MessageNotificator" Opacity="0"
+                        Margin="15"  HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
                 </Grid>
                 
             </Grid>

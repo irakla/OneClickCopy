@@ -1,4 +1,4 @@
-﻿<Border x:Class="OneClickCopy.ToastNotification"
+﻿<Border x:Class="OneClickCopy.ToastNotifier"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -7,37 +7,40 @@
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d"
              x:Name="ToastNotificationBackground"
+             Visibility="Hidden"
              CornerRadius="15" Width="Auto" MinHeight="20" Background="LightGray"
+             MouseEnter="PreserveTheMessage" MouseLeave="OutTheMessage"
              d:DesignHeight="450" d:DesignWidth="800">
     <Border.Resources>
-        <Storyboard x:Key="StoryboardFadeIn">
+        <Storyboard x:Key="StoryboardFadeIn" Completed="WaitAndOut">
             <DoubleAnimation
                 Storyboard.TargetName="ToastNotificationBackground"
                 Storyboard.TargetProperty="Opacity"
-                From="0.0" To="1.0" Duration="0:0:0.25"/>
+                From="0.0" To="1.0" Duration="0:0:0.5" FillBehavior="Stop"/>
+        </Storyboard>
+        <Storyboard x:Key="StoryboardFadeOut" Completed="MakeHidden">
+            <DoubleAnimation
+                Storyboard.TargetName="ToastNotificationBackground"
+                Storyboard.TargetProperty="Opacity"
+                From="1.0" To="0.0" Duration="0:0:0.5" FillBehavior="Stop"/>
         </Storyboard>
     </Border.Resources>
-    <Border.Triggers>
-        <EventTrigger RoutedEvent="Border.Loaded">
-            <BeginStoryboard Storyboard="{StaticResource StoryboardFadeIn}" />
-        </EventTrigger>
-    </Border.Triggers>
     
     <Grid ShowGridLines="True">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="30"/>
         </Grid.ColumnDefinitions>
-
+        
         <TextBlock Grid.Column="0" x:Name="MessageTextBlock" Margin="15, 0, 15, 0"
-                   HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="13"/>
+                    HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="13" TextWrapping="Wrap"/>
 
-        <Label Grid.Column="1">
-            <Label.Style>
-                <Style TargetType="Label">
+        <Button Grid.Column="1" x:Name="CloseNotificationButton" Click="OutTheMessage">
+            <Button.Style>
+                <Style TargetType="Button">
                     <Setter Property="Template">
                         <Setter.Value>
-                            <ControlTemplate TargetType="Label">
+                            <ControlTemplate TargetType="Button">
                                 <Border Background="Transparent">
                                     <ContentPresenter />
                                 </Border>
@@ -54,7 +57,7 @@
                         </Setter.Value>
                     </Setter>
                 </Style>
-            </Label.Style>
+            </Button.Style>
             <Canvas Grid.Column="2"
                     HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Canvas.Resources>
@@ -71,7 +74,7 @@
                     X2="{StaticResource RadiusPositive}" Y2="{StaticResource RadiusNegative}"
                     Stroke="Black" StrokeThickness="1"/>
             </Canvas>
-        </Label>
+        </Button>
     </Grid>
     
 </Border>

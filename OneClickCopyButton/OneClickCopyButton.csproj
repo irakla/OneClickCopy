@@ -67,8 +67,8 @@
       <DependentUpon>OwnCopyLinePanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainWindowSettingsController.cs" />
-    <Compile Include="ToastNotification.xaml.cs">
-      <DependentUpon>ToastNotification.xaml</DependentUpon>
+    <Compile Include="ToastNotifier.xaml.cs">
+      <DependentUpon>ToastNotifier.xaml</DependentUpon>
     </Compile>
     <Page Include="Templates\OwnCopyInfoPopup.xaml">
       <SubType>Designer</SubType>
@@ -91,7 +91,7 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="ToastNotification.xaml">
+    <Page Include="ToastNotifier.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

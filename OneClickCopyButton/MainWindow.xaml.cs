@@ -135,17 +135,8 @@ namespace OneClickCopy
             Loaded += SetWindowConstraintsWithElements;
         }
 
-        public void LaunchToastNotification()
-        {
-            /*var newToast = new ToastNotification();
-            newToast.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
-            newToast.PlacementTarget = this;
-            newToast.IsOpen = true;*/
-
-            var testControl = new ToastNotification("TESTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT");
-
-            MessageSpace.Content = testControl;
-        }
+        public void LaunchToastNotification(string message)
+            => MessageNotificator.LaunchTheMessage(message);
 
         private void UpdatePinEdgeVisiblity()
         {
@@ -180,7 +171,6 @@ namespace OneClickCopy
             }
 
             InitializeFadeInOutAnimation();
-            LaunchToastNotification();
         }
 
         private bool LoadBeforeSettings()
@@ -251,6 +241,12 @@ namespace OneClickCopy
         private void IsClickedTopmostButton(object sender, RoutedEventArgs e)
         {
             TopmostButtonIsPinned = !TopmostButtonIsPinned;
+            
+            //TODO : 임시 테스트 출력임. 후에 수정하거나 주석 삭제할 것.
+            if(TopmostButtonIsPinned)
+                LaunchToastNotification("다른 창 뒤로 넘어가지 않게 고정되었습니다.");
+            else
+                LaunchToastNotification("창 최상단 고정이 해제되었습니다.");
         }
 
         private void IsToggledCheckBoxCanBeTransparent(object sender, RoutedEventArgs e)
