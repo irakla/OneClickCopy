@@ -28,21 +28,30 @@ namespace OneClickCopy
         
         private bool isClickedCloseNotificationButton = false;
 
+        private bool lockMessageLaunching = true;
+
+        public bool IsLocked { get => lockMessageLaunching; }
+
         public ToastNotifier()
         {
             InitializeComponent();
 
             showTimer.Interval = new TimeSpan(0, 0, 0, 0, milliSecMessagePreserving);
-            showTimer.Tick += OutTheMessage;
+            showTimer.Tick += new EventHandler(OutTheMessage);
         }
+
+        public void DisableLock() => lockMessageLaunching = false;
 
         public void LaunchTheMessage(string message)
         {
+            if (IsLocked)
+                return;
+
             InitializeNotifier();
             MessageTextBlock.Text = message;
             Visibility = Visibility.Visible;
 
-            var storyboardFadeIn = (Storyboard)Resources["StoryboardFadeIn"];
+            var storyboardFadeIn = (Storyboard)(Resources["StoryboardFadeIn"]);
 
             BeginStoryboard(storyboardFadeIn);
         }
@@ -54,7 +63,7 @@ namespace OneClickCopy
 
             if (nowPlayingStoryboard != null)
             {
-                nowPlayingStoryboard.Stop(this);
+                nowPlayingStoryboard.Stop();
                 nowPlayingStoryboard = null;
             }
 
@@ -115,7 +124,7 @@ namespace OneClickCopy
         private new void BeginStoryboard(Storyboard storyboard)
         {
             if (nowPlayingStoryboard != null)
-                nowPlayingStoryboard.Stop(this);
+                nowPlayingStoryboard.Remove(this);
 
             storyboard.Completed -= ReportPlayingEnded;
             storyboard.Completed += ReportPlayingEnded;

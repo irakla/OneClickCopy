@@ -142,7 +142,7 @@
                                 Background="Transparent">
                     </StackPanel>
 
-                    <local:ToastNotifier x:Name="MessageNotificator" Opacity="0"
+                    <local:ToastNotifier x:Name="MessageNotifier" Opacity="0"
                         Margin="15"  HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
                 </Grid>
                 

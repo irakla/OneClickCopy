@@ -139,7 +139,7 @@ namespace OneClickCopy
         }
 
         public void LaunchToastNotification(string message)
-            => MessageNotificator.LaunchTheMessage(message);
+            => MessageNotifier.LaunchTheMessage(message);
 
         private void UpdatePinEdgeVisiblity()
         {
@@ -208,6 +208,8 @@ namespace OneClickCopy
 
                 mainWindowSettingsController.ApplyAllCurrentSettings();
             }
+
+            MessageNotifier.DisableLock();
         }
 
         private void InitializeFadeInOutAnimation()
