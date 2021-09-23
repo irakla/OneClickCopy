@@ -33,7 +33,7 @@ namespace OneClickCopy
             InitializeComponent();
 
             showTimer.Interval = new TimeSpan(0, 0, 0, 0, milliSecMessagePreserving);
-            showTimer.Tick += new EventHandler(OutTheMessage);
+            showTimer.Tick += OutTheMessage;
         }
 
         public void LaunchTheMessage(string message)
@@ -42,7 +42,7 @@ namespace OneClickCopy
             MessageTextBlock.Text = message;
             Visibility = Visibility.Visible;
 
-            var storyboardFadeIn = (Storyboard)(Resources["StoryboardFadeIn"]);
+            var storyboardFadeIn = (Storyboard)Resources["StoryboardFadeIn"];
 
             BeginStoryboard(storyboardFadeIn);
         }
@@ -54,7 +54,7 @@ namespace OneClickCopy
 
             if (nowPlayingStoryboard != null)
             {
-                nowPlayingStoryboard.Stop();
+                nowPlayingStoryboard.Stop(this);
                 nowPlayingStoryboard = null;
             }
 
@@ -115,7 +115,7 @@ namespace OneClickCopy
         private new void BeginStoryboard(Storyboard storyboard)
         {
             if (nowPlayingStoryboard != null)
-                nowPlayingStoryboard.Remove(this);
+                nowPlayingStoryboard.Stop(this);
 
             storyboard.Completed -= ReportPlayingEnded;
             storyboard.Completed += ReportPlayingEnded;

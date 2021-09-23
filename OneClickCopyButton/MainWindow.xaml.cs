@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Resources;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -35,6 +36,8 @@ namespace OneClickCopy
         private Storyboard storyboardOpacityFadeInOut = null;
         private DoubleAnimation animationOpacityToThick = null;
         private DoubleAnimation animationOpacityToTransparent = null;
+
+        private ResourceManager messageResourceManager = new ResourceManager(typeof(OneClickCopy.Properties.MessageResource));
 
         private bool IsReadyMainWindowSettingController
         {
@@ -241,18 +244,22 @@ namespace OneClickCopy
         private void IsClickedTopmostButton(object sender, RoutedEventArgs e)
         {
             TopmostButtonIsPinned = !TopmostButtonIsPinned;
-            
-            //TODO : 임시 테스트 출력임. 후에 수정하거나 주석 삭제할 것.
-            if(TopmostButtonIsPinned)
-                LaunchToastNotification("다른 창 뒤로 넘어가지 않게 고정되었습니다.");
+
+            if (TopmostButtonIsPinned)
+                LaunchToastNotification(messageResourceManager.GetString("TopmostSet"));
             else
-                LaunchToastNotification("창 최상단 고정이 해제되었습니다.");
+                LaunchToastNotification(messageResourceManager.GetString("TopmostUnset"));
         }
 
         private void IsToggledCheckBoxCanBeTransparent(object sender, RoutedEventArgs e)
         {
             if(checkboxCanBeTransparent.IsChecked != null)
                 CanBeTransparent = (bool)checkboxCanBeTransparent.IsChecked;
+
+            if (CanBeTransparent)
+                LaunchToastNotification(messageResourceManager.GetString("WindowCanBeTransparent"));
+            else
+                LaunchToastNotification(messageResourceManager.GetString("WindowCannotBeTransparent"));
         }
 
         private void MakeWindowTransparent(object sender, MouseEventArgs e)

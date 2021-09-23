@@ -22,14 +22,14 @@ namespace OneClickCopy.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
+    internal class MessageResource {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Resources() {
+        internal MessageResource() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace OneClickCopy.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("OneClickCopy.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("OneClickCopy.Properties.MessageResource", typeof(MessageResource).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -57,6 +57,42 @@ namespace OneClickCopy.Properties {
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   다른 창 뒤로 넘어가지 않게 고정되었습니다.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        internal static string TopmostSet {
+            get {
+                return ResourceManager.GetString("TopmostSet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   창 최상단 고정이 해제되었습니다.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        internal static string TopmostUnset {
+            get {
+                return ResourceManager.GetString("TopmostUnset", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   커서가 밖으로 나가면 창이 투명해집니다.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        internal static string WindowCanBeTransparent {
+            get {
+                return ResourceManager.GetString("WindowCanBeTransparent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   창이 투명해지지 않습니다.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        internal static string WindowCannotBeTransparent {
+            get {
+                return ResourceManager.GetString("WindowCannotBeTransparent", resourceCulture);
             }
         }
     }
