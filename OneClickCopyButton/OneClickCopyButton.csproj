@@ -65,6 +65,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>MessageResource.resx</DependentUpon>
     </Compile>
+    <Compile Include="Properties\UIResource.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>UIResource.resx</DependentUpon>
+    </Compile>
     <Compile Include="Templates\OwnCopyInfoPopup.xaml.cs">
       <DependentUpon>OwnCopyInfoPopup.xaml</DependentUpon>
     </Compile>
@@ -120,8 +125,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\MessageResource.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>MessageResource.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\UIResource.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>UIResource.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

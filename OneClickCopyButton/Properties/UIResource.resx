@@ -117,19 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="NowOpacityAtMouseLeaving" xml:space="preserve">
-    <value>커서가 밖에 있을 때 창 투명도</value>
+  <data name="TextLeftClickIsCopy" xml:space="preserve">
+    <value>좌클릭 : 저장된 내용 복사</value>
   </data>
-  <data name="TopmostSet" xml:space="preserve">
-    <value>다른 창 뒤로 넘어가지 않게 고정되었습니다.</value>
-  </data>
-  <data name="TopmostUnset" xml:space="preserve">
-    <value>창 최상단 고정이 해제되었습니다.</value>
-  </data>
-  <data name="WindowCanBeTransparent" xml:space="preserve">
-    <value>커서가 밖으로 나가면 창이 투명해집니다.</value>
-  </data>
-  <data name="WindowCannotBeTransparent" xml:space="preserve">
-    <value>창이 투명해지지 않습니다.</value>
+  <data name="TextRightClickIsSaveCopy" xml:space="preserve">
+    <value>우클릭 : 복사할 내용 저장</value>
   </data>
 </root>

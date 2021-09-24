@@ -310,21 +310,30 @@ namespace OneClickCopy
         {
             OpacityAtMouseLeaving = sliderOpacityAtMouseLeaving.Value;
 
-            if (
-                (checkboxCanBeTransparent?.IsChecked != null &&
-                (bool)checkboxCanBeTransparent.IsChecked) &&
-                !IsMouseOverAtThisMoment()
-                )
-                Opacity = sliderOpacityAtMouseLeaving.Value;
+            if (CanBeTransparent && !IsMouseOverAtThisMoment())
+                Opacity = OpacityAtMouseLeaving;
             else
                 Opacity = 1;
+
+            LaunchToastNotification(GetNowOpacityAtMouseLeavingMessage());
         }
 
         private void IsFixedOpacitySlideByKey(object sender, KeyEventArgs e)
         {
-            if(e.Key == Key.Left || e.Key == Key.Right || e.Key == Key.Up || e.Key == Key.Down)
+            if (e.Key == Key.Left || e.Key == Key.Right || e.Key == Key.Up || e.Key == Key.Down)
+            {
                 OpacityAtMouseLeaving = sliderOpacityAtMouseLeaving.Value;
+
+                if (IsMouseOverAtThisMoment())
+                    Opacity = 1;
+            }
+
+            LaunchToastNotification(GetNowOpacityAtMouseLeavingMessage());
         }
+
+        private string GetNowOpacityAtMouseLeavingMessage()
+            => messageResourceManager.GetString("NowOpacityAtMouseLeaving") + " : " +
+            string.Format("{0:0.00}", OpacityAtMouseLeaving);
 
         private void NotifyIsChangedPositionOnScreen(object sender, EventArgs _)
         {
