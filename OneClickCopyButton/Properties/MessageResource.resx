@@ -117,19 +117,25 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="NowOpacityAtMouseLeaving" xml:space="preserve">
-    <value>커서가 밖에 있을 때 창 투명도</value>
+  <data name="CopyButtonTitleFixed_Formatted" xml:space="preserve">
+    <value>버튼 타이틀이 {0} 로 고정됩니다.</value>
   </data>
-  <data name="TopmostSet" xml:space="preserve">
-    <value>다른 창 뒤로 넘어가지 않게 고정되었습니다.</value>
-  </data>
-  <data name="TopmostUnset" xml:space="preserve">
-    <value>창 최상단 고정이 해제되었습니다.</value>
+  <data name="CopyButtonTitleUnfixed" xml:space="preserve">
+    <value>더 이상 버튼 타이틀이 고정되지 않습니다.</value>
   </data>
   <data name="WindowCanBeTransparent" xml:space="preserve">
     <value>커서가 밖으로 나가면 창이 투명해집니다.</value>
   </data>
   <data name="WindowCannotBeTransparent" xml:space="preserve">
     <value>창이 투명해지지 않습니다.</value>
+  </data>
+  <data name="WindowOpacityAtMouseLeaving" xml:space="preserve">
+    <value>커서가 밖에 있을 때 창 투명도</value>
+  </data>
+  <data name="WindowTopmostSet" xml:space="preserve">
+    <value>다른 창 뒤로 넘어가지 않게 고정되었습니다.</value>
+  </data>
+  <data name="WindowTopmostUnset" xml:space="preserve">
+    <value>창 최상단 고정이 해제되었습니다.</value>
   </data>
 </root>

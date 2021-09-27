@@ -51,7 +51,7 @@ namespace OneClickCopy
             MessageTextBlock.Text = message;
             Visibility = Visibility.Visible;
 
-            var storyboardFadeIn = (Storyboard)(Resources["StoryboardFadeIn"]);
+            Storyboard storyboardFadeIn = (Storyboard)(Resources["StoryboardFadeIn"]);
 
             BeginStoryboard(storyboardFadeIn);
         }

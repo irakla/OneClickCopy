@@ -61,29 +61,20 @@ namespace OneClickCopy.Properties {
         }
         
         /// <summary>
-        ///   커서가 밖에 있을 때 창 투명도과(와) 유사한 지역화된 문자열을 찾습니다.
+        ///   버튼 타이틀이 {0} 로 고정됩니다.과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
-        public static string NowOpacityAtMouseLeaving {
+        public static string CopyButtonTitleFixed_Formatted {
             get {
-                return ResourceManager.GetString("NowOpacityAtMouseLeaving", resourceCulture);
+                return ResourceManager.GetString("CopyButtonTitleFixed_Formatted", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   다른 창 뒤로 넘어가지 않게 고정되었습니다.과(와) 유사한 지역화된 문자열을 찾습니다.
+        ///   더 이상 버튼 타이틀이 고정되지 않습니다.과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
-        public static string TopmostSet {
+        public static string CopyButtonTitleUnfixed {
             get {
-                return ResourceManager.GetString("TopmostSet", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   창 최상단 고정이 해제되었습니다.과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string TopmostUnset {
-            get {
-                return ResourceManager.GetString("TopmostUnset", resourceCulture);
+                return ResourceManager.GetString("CopyButtonTitleUnfixed", resourceCulture);
             }
         }
         
@@ -102,6 +93,33 @@ namespace OneClickCopy.Properties {
         public static string WindowCannotBeTransparent {
             get {
                 return ResourceManager.GetString("WindowCannotBeTransparent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   커서가 밖에 있을 때 창 투명도과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string WindowOpacityAtMouseLeaving {
+            get {
+                return ResourceManager.GetString("WindowOpacityAtMouseLeaving", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   다른 창 뒤로 넘어가지 않게 고정되었습니다.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string WindowTopmostSet {
+            get {
+                return ResourceManager.GetString("WindowTopmostSet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   창 최상단 고정이 해제되었습니다.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string WindowTopmostUnset {
+            get {
+                return ResourceManager.GetString("WindowTopmostUnset", resourceCulture);
             }
         }
     }

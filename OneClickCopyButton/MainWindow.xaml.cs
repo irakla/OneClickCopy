@@ -248,9 +248,9 @@ namespace OneClickCopy
             TopmostButtonIsPinned = !TopmostButtonIsPinned;
 
             if (TopmostButtonIsPinned)
-                LaunchToastNotification(messageResourceManager.GetString("TopmostSet"));
+                LaunchToastNotification(messageResourceManager.GetString("WindowTopmostSet"));
             else
-                LaunchToastNotification(messageResourceManager.GetString("TopmostUnset"));
+                LaunchToastNotification(messageResourceManager.GetString("WindowTopmostUnset"));
         }
 
         private void IsToggledCheckBoxCanBeTransparent(object sender, RoutedEventArgs e)
@@ -332,7 +332,7 @@ namespace OneClickCopy
         }
 
         private string GetNowOpacityAtMouseLeavingMessage()
-            => messageResourceManager.GetString("NowOpacityAtMouseLeaving") + " : " +
+            => messageResourceManager.GetString("WindowOpacityAtMouseLeaving") + " : " +
             string.Format("{0:0.00}", OpacityAtMouseLeaving);
 
         private void NotifyIsChangedPositionOnScreen(object sender, EventArgs _)

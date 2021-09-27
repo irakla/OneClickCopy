@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Resources;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading;
@@ -25,6 +26,8 @@ namespace OneClickCopy
         private bool isEdittingOwnCopyContent = false;
         private OwnCopyInfoPopup lastOwnCopyInfoPopup= null;
         private DataObject currentOwnCopy = null;
+        private ToastNotifier messageNotifier = null;                   //In your code using this, consider it can be null
+        private ResourceManager messageResourceManager = new ResourceManager(typeof(OneClickCopy.Properties.MessageResource));
 
         public bool IsEditting
         {
@@ -84,14 +87,41 @@ namespace OneClickCopy
         public OwnCopyLinePanel()
         {
             InitializeComponent();
+
+            Loaded += GetMainWindowElements;
+        }
+        
+        private void GetMainWindowElements(object sender, EventArgs e)
+        {
+            MainWindow mainWindow = Application.Current.MainWindow as MainWindow;
+
+            messageNotifier = mainWindow?.MessageNotifier;
         }
 
         public void ToggleTitleFixingButton(object sender, EventArgs e)
         {
             if(IsFixedTitle)
+            {
                 TitleFixingPinEdge.Visibility = Visibility.Visible;
+
+                string formattedFixedMessage = messageResourceManager.GetString("CopyButtonTitleFixed_Formatted");
+                string nowTitle = OwnCopyTitleText.Text;
+
+                string titleIsFixedString = OwnCopyTitleText.Text.Length <= 15 ?
+                    string.Format(formattedFixedMessage, nowTitle) :
+                    string.Format(formattedFixedMessage, nowTitle.Substring(0, 10) + "..." + nowTitle.Substring(nowTitle.Length - 5));
+
+                messageNotifier?.LaunchTheMessage(titleIsFixedString);
+            }
             else
+            {
                 TitleFixingPinEdge.Visibility = Visibility.Hidden;
+
+                string titleIsUnfixedString
+                    = messageResourceManager.GetString("CopyButtonTitleUnfixed");
+
+                messageNotifier?.LaunchTheMessage(titleIsUnfixedString);
+            }
         }
 
         public void CopyToSystemClipboard(object sender, EventArgs e)
