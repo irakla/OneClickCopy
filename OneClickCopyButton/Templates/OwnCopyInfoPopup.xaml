@@ -4,6 +4,7 @@
        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
        xmlns:local="clr-namespace:OneClickCopy.Templates"
+       xmlns:resui="clr-namespace:OneClickCopy.Properties"
        mc:Ignorable="d"
        Width="Auto" MinWidth="100" MouseDown="MouseTest" KeyDown="KeyInteraction"
        d:DesignHeight="450" d:DesignWidth="800">
@@ -32,8 +33,9 @@
                 </TextBlock.Inlines>
             </TextBlock>
 
-            <TextBox Grid.Row="1" Style="{StaticResource OwnCopyContentFont}" x:Name="TitleTextBox" Text="Test" Margin="2,2,2,2"
-                     MaxLines="1" TextWrapping="NoWrap"/>
+            <TextBox Grid.Row="1" Style="{StaticResource OwnCopyContentFont}" x:Name="TitleTextBox" Margin="2,2,2,2"
+                     MaxLines="1" TextWrapping="NoWrap"
+                     Text="{x:Static resui:UIResource.TextThisDataDoesntHaveTitleText}"/>
 
             <TextBlock Grid.Row="2" Style="{StaticResource OwnCopyDescriptionFont}">
                 <TextBlock.Inlines>

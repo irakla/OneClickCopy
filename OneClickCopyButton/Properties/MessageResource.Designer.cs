@@ -61,6 +61,51 @@ namespace OneClickCopy.Properties {
         }
         
         /// <summary>
+        ///   클립보드가 비어있어 저장할 수 없습니다.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string CopyButtonClipboardIsEmpty {
+            get {
+                return ResourceManager.GetString("CopyButtonClipboardIsEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   저장된 내용을 복사하였습니다.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string CopyButtonCopiedData {
+            get {
+                return ResourceManager.GetString("CopyButtonCopiedData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   기존에 저장했던 내용입니다.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string CopyButtonIsExistingData {
+            get {
+                return ResourceManager.GetString("CopyButtonIsExistingData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   저장된 내용이 없어 복사할 수 없습니다.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string CopyButtonOwnCopyIsEmpty {
+            get {
+                return ResourceManager.GetString("CopyButtonOwnCopyIsEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   복사할 새로운 내용을 저장하였습니다.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string CopyButtonSavedNewData {
+            get {
+                return ResourceManager.GetString("CopyButtonSavedNewData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   버튼 타이틀이 {0} 로 고정됩니다.과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string CopyButtonTitleFixed_Formatted {

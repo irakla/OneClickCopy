@@ -77,5 +77,14 @@ namespace OneClickCopy.Properties {
                 return ResourceManager.GetString("TextRightClickIsSaveCopy", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   이 데이터를 표현할 텍스트가 없습니다.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string TextThisDataDoesntHaveTitleText {
+            get {
+                return ResourceManager.GetString("TextThisDataDoesntHaveTitleText", resourceCulture);
+            }
+        }
     }
 }

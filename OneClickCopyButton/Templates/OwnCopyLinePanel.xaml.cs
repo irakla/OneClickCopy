@@ -25,9 +25,13 @@ namespace OneClickCopy
     {
         private bool isEdittingOwnCopyContent = false;
         private OwnCopyInfoPopup lastOwnCopyInfoPopup= null;
+
         private DataObject currentOwnCopy = null;
+
         private ToastNotifier messageNotifier = null;                   //In your code using this, consider it can be null
         private ResourceManager messageResourceManager = new ResourceManager(typeof(OneClickCopy.Properties.MessageResource));
+
+        private const int ProperCharLengthForDisplaying = 15;
 
         public bool IsEditting
         {
@@ -60,9 +64,6 @@ namespace OneClickCopy
                     CopyButton.Style = (Style)Resources["HasOwnCopyStyle"];
                 else
                     CopyButton.Style = (Style)Resources["DefaultLineButton"];
-
-                if (HasOwnCopy)
-                    Debug.WriteLine("Style changed to HasOwnCopyStyle");
             }
         }
 
@@ -107,7 +108,7 @@ namespace OneClickCopy
                 string formattedFixedMessage = messageResourceManager.GetString("CopyButtonTitleFixed_Formatted");
                 string nowTitle = OwnCopyTitleText.Text;
 
-                string titleIsFixedString = OwnCopyTitleText.Text.Length <= 15 ?
+                string titleIsFixedString = OwnCopyTitleText.Text.Length <= ProperCharLengthForDisplaying ?
                     string.Format(formattedFixedMessage, nowTitle) :
                     string.Format(formattedFixedMessage, nowTitle.Substring(0, 10) + "..." + nowTitle.Substring(nowTitle.Length - 5));
 
@@ -130,7 +131,11 @@ namespace OneClickCopy
             {
                 Clipboard.Clear();
                 Clipboard.SetDataObject(OwnCopy);
+
+                messageNotifier?.LaunchTheMessage(messageResourceManager.GetString("CopyButtonCopiedData"));
             }
+            else
+                messageNotifier?.LaunchTheMessage(messageResourceManager.GetString("CopyButtonOwnCopyIsEmpty"));
         }
 
         public void OpenInfoPopupByCopyButton(object sender, MouseEventArgs mouseEvent)
@@ -143,8 +148,10 @@ namespace OneClickCopy
 
             if (HasOwnCopy)
             {
-                lastOwnCopyInfoPopup = new OwnCopyInfoPopup();
-                lastOwnCopyInfoPopup.OwnCopyInfoPopupContent = OwnCopy;
+                lastOwnCopyInfoPopup = new OwnCopyInfoPopup
+                {
+                    OwnCopyInfoPopupContent = OwnCopy
+                };
 
                 if (IsFixedTitle)
                     lastOwnCopyInfoPopup.TitleTextBox.Text = OwnCopyTitleText.Text;
@@ -157,14 +164,20 @@ namespace OneClickCopy
 
         private void CopyFromSystemClipboard()
         {
-            bool TheCopiesAreEqual = HasOwnCopy && Clipboard.IsCurrent(OwnCopy);
-            if (TheCopiesAreEqual)
+            bool BothCopiesAreEqual = HasOwnCopy && Clipboard.IsCurrent(OwnCopy);
+            if (BothCopiesAreEqual)
+            {
+                messageNotifier?.LaunchTheMessage(messageResourceManager.GetString("CopyButtonIsExistingData"));
                 return;
+            }
 
             IDataObject currentClipboardData = Clipboard.GetDataObject();
 
             if (currentClipboardData.GetFormats().Length == 0)
+            {
+                messageNotifier?.LaunchTheMessage(messageResourceManager.GetString("CopyButtonClipboardIsEmpty"));
                 return;
+            }
 
             DataObject newCopy = new DataObject();
             
@@ -192,6 +205,10 @@ namespace OneClickCopy
             }
 
             OwnCopy = newCopy;
+            Clipboard.Clear();
+            Clipboard.SetDataObject(OwnCopy);
+
+            messageNotifier?.LaunchTheMessage(messageResourceManager.GetString("CopyButtonSavedNewData"));
         }
 
         public void OpenInfoPopupByEditButton(object sender, EventArgs _)

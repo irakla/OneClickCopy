@@ -21,7 +21,7 @@ namespace OneClickCopy.Templates
     {
         private IDataObject nowOwnCopyData = null;
 
-        private Window currentMainWindow =Application.Current.MainWindow;
+        private Window currentMainWindow = Application.Current.MainWindow;
 
         public bool HasTextData
         {
@@ -75,10 +75,20 @@ namespace OneClickCopy.Templates
                 string dataRawText = (string)OwnCopyInfoPopupContent.GetData(DataFormats.Text);
                 string[] splittedByNewLine = dataRawText.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
 
-                string newTitleText = splittedByNewLine.Length != 0 ? splittedByNewLine[0].Trim('\n') : "";
+                string newTitleText = String.Empty; 
+                
+                for(int nowContentLineCount = 0; nowContentLineCount < splittedByNewLine.Length; nowContentLineCount++)
+                {
+                    string nowContentLineText = splittedByNewLine[nowContentLineCount].Trim('\n');
+
+                    if (String.IsNullOrWhiteSpace(nowContentLineText))
+                        continue;
+
+                    newTitleText = nowContentLineText.Trim(new[] { ' ', '\t' });
+                    break;
+                }
 
                 TitleTextBox.Text = newTitleText;
-                Debug.WriteLine("TitleTextBox.Text : " + TitleTextBox.Text + "And Test");
                 TitleTextBox.SelectAll();
             }
         }
