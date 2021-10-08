@@ -136,6 +136,8 @@ namespace OneClickCopy
 
             Loaded += ApplyBeforeSettings;
             Loaded += SetWindowConstraintsWithElements;
+
+            Closed += MakePersistentCopy;
         }
 
         public void LaunchToastNotification(string message)
@@ -370,6 +372,16 @@ namespace OneClickCopy
                 cursorPosition.Y >= WindowBorderTop && cursorPosition.Y < WindowBorderBottom;
 
             return isMouseOver;
+        }
+
+        private void MakePersistentCopy(object sender, EventArgs e)
+        {
+            IDataObject latestCopy = showingClipboardLineList.LatestCopy;
+
+            if (latestCopy != null && Clipboard.IsCurrent(latestCopy))
+            {
+                Clipboard.SetDataObject(latestCopy, true);
+            }
         }
 
 #if DEBUG

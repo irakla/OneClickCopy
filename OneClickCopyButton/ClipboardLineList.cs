@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace OneClickCopy
 {
@@ -13,6 +14,7 @@ namespace OneClickCopy
         private int minimumLine = 1;
 
         public List<OwnCopyLinePanel> ClipboardLines { get => clipboardLineList; }
+        public DataObject LatestCopy { get; private set; } = null;
 
         public ClipboardLineList() =>
             InitializeList();
@@ -20,7 +22,19 @@ namespace OneClickCopy
         private void InitializeList()
         {
             for (int i = 0; i < minimumLine; i++)
-                clipboardLineList.Add(new OwnCopyLinePanel());
+            {
+                OwnCopyLinePanel nowLinePanel = new OwnCopyLinePanel();
+                nowLinePanel.IsPointedFromClipboard += GetLatestCopy;
+                clipboardLineList.Add(nowLinePanel);
+            }
+        }
+
+        private void GetLatestCopy(object sender, EventArgs e)
+        {
+            var latestCopyOwner = sender as OwnCopyLinePanel;
+            
+            if(latestCopyOwner != null)
+                LatestCopy = latestCopyOwner.OwnCopy;
         }
     }
 }

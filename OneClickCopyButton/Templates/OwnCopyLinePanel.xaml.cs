@@ -31,6 +31,8 @@ namespace OneClickCopy
         private ToastNotifier messageNotifier = null;                   //In your code using this, consider it can be null
         private ResourceManager messageResourceManager = new ResourceManager(typeof(OneClickCopy.Properties.MessageResource));
 
+        public event EventHandler IsPointedFromClipboard;
+
         private const int ProperCharLengthForDisplaying = 15;
 
         public bool IsEditting
@@ -53,10 +55,10 @@ namespace OneClickCopy
             }
         }
 
-        private DataObject OwnCopy
+        public DataObject OwnCopy
         {
             get => currentOwnCopy;
-            set
+            private set
             {
                 currentOwnCopy = value;
 
@@ -68,8 +70,7 @@ namespace OneClickCopy
         }
 
         public bool HasOwnCopy
-        { get => (currentOwnCopy != null) 
-                && (currentOwnCopy.GetFormats().Length != 0); }
+        { get => (currentOwnCopy != null) && (currentOwnCopy.GetFormats().Length != 0); }
 
         public bool IsFixedTitle
         {
@@ -132,6 +133,9 @@ namespace OneClickCopy
                 Clipboard.Clear();
                 Clipboard.SetDataObject(OwnCopy);
 
+                if (IsPointedFromClipboard != null)
+                    IsPointedFromClipboard(this, EventArgs.Empty);
+
                 messageNotifier?.LaunchTheMessage(messageResourceManager.GetString("CopyButtonCopiedData"));
             }
             else
@@ -180,7 +184,8 @@ namespace OneClickCopy
             }
 
             DataObject newCopy = new DataObject();
-            
+
+            int skippedFormatCount = 0;
             foreach(string nowFormat in currentClipboardData.GetFormats())
             {
                 try
@@ -199,14 +204,21 @@ namespace OneClickCopy
                         newCopy.SetData(nowFormat, nowCopyingData);
                 }
                 catch (System.Runtime.InteropServices.COMException comException) {
-                    Console.WriteLine("Skipped Data : " + nowFormat);
-                    Console.WriteLine("HResult : {0:X}, Message : {1}", comException.HResult, comException.Message);
+                    Debug.WriteLine("Skipped Data : " + nowFormat);
+                    Debug.WriteLine("HResult : {0:X}, Message : {1}", comException.HResult, comException.Message);
+                    skippedFormatCount++;
                 }
             }
+
+            if (newCopy.GetFormats().Length == skippedFormatCount)
+                return;     //All format data is skipped so this copy doesn't contain anything.
 
             OwnCopy = newCopy;
             Clipboard.Clear();
             Clipboard.SetDataObject(OwnCopy);
+
+            if(IsPointedFromClipboard != null)
+                IsPointedFromClipboard(this, EventArgs.Empty);
 
             messageNotifier?.LaunchTheMessage(messageResourceManager.GetString("CopyButtonSavedNewData"));
         }
