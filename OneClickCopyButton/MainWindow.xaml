@@ -35,7 +35,8 @@
                         <TextBlock Text="{Binding Title, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}"/>
                     </Label>
 
-                    <Grid x:Name="CustomTitleBar" HorizontalAlignment="Right" Background="Transparent" Height="32">
+                    <Grid x:Name="CustomTitleBar" HorizontalAlignment="Right" Background="Transparent" Height="32"
+                          MouseDown="IsClickedForDrag">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="35"/>
                             <ColumnDefinition Width="60"/>
