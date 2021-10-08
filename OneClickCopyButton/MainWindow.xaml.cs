@@ -76,6 +76,8 @@ namespace OneClickCopy
 
                 if (IsReadyMainWindowSettingController)
                     mainWindowSettingsController.SetNewWindowSize(value);
+                
+                SetWindowDragElementsVisibility();
             }
         }
 
@@ -95,10 +97,10 @@ namespace OneClickCopy
 
         public bool CanBeTransparent
         {
-            get => checkboxCanBeTransparent.IsChecked != null && (bool)checkboxCanBeTransparent.IsChecked;
+            get => CheckBoxCanBeTransparent.IsChecked != null && (bool)CheckBoxCanBeTransparent.IsChecked;
             set
             {
-                checkboxCanBeTransparent.IsChecked = value;
+                CheckBoxCanBeTransparent.IsChecked = value;
 
                 if (IsReadyMainWindowSettingController)
                     mainWindowSettingsController.SetCanBeTransparent(value);
@@ -107,15 +109,15 @@ namespace OneClickCopy
 
         public double OpacityAtMouseLeaving
         {
-            get => sliderOpacityAtMouseLeaving.Value;
+            get => SliderOpacityAtMouseLeaving.Value;
             set
             {
                 if (value > 1.0)
-                    sliderOpacityAtMouseLeaving.Value = 1.0;
-                else if (value < sliderOpacityAtMouseLeaving.Minimum)
-                    sliderOpacityAtMouseLeaving.Value = sliderOpacityAtMouseLeaving.Minimum;
+                    SliderOpacityAtMouseLeaving.Value = 1.0;
+                else if (value < SliderOpacityAtMouseLeaving.Minimum)
+                    SliderOpacityAtMouseLeaving.Value = SliderOpacityAtMouseLeaving.Minimum;
                 else
-                    sliderOpacityAtMouseLeaving.Value = value;
+                    SliderOpacityAtMouseLeaving.Value = value;
 
                 if(animationOpacityToTransparent != null)
                     animationOpacityToTransparent.To = value;
@@ -165,14 +167,6 @@ namespace OneClickCopy
                 showingClipboardLineList.ClipboardLines)
             {
                 ClipboardLineListPanel.Children.Add(nowClipboardLine);
-            }
-
-            if (ClipboardLineListPanel.Children.Count > 0 &&
-                ClipboardLineListPanel.Children[0] is FrameworkElement)
-            {
-                double calculatedMinWidth = ((FrameworkElement)ClipboardLineListPanel.Children[0]).MinWidth;
-                ClipboardLineListPanel.MinWidth = calculatedMinWidth;
-                MinWidth = calculatedMinWidth;
             }
 
             InitializeFadeInOutAnimation();
@@ -234,7 +228,35 @@ namespace OneClickCopy
 
         private void SetWindowConstraintsWithElements(object sender, RoutedEventArgs e)
         {
-            MinWidth = CustomTitleBar.ActualWidth;
+            if (ClipboardLineListPanel.Children.Count > 0 &&
+                ClipboardLineListPanel.Children[0] is FrameworkElement)
+            {
+                double copyPanelMinWidth = ((FrameworkElement)ClipboardLineListPanel.Children[0]).MinWidth;
+                ClipboardLineListPanel.MinWidth = copyPanelMinWidth;
+
+                double customTitleBarWidth = CustomTitleBar.ActualWidth;
+
+                double resizeBorderWidth 
+                    = NowWindowChrome.ResizeBorderThickness.Left + NowWindowChrome.ResizeBorderThickness.Right;
+                
+                MinWidth = Math.Max(copyPanelMinWidth, customTitleBarWidth) + resizeBorderWidth;
+
+                SetWindowDragElementsVisibility();
+            }
+        }
+
+        private void SetWindowDragElementsVisibility()
+        {
+            if (Width == MinWidth)
+            {
+                LabelTitleText.Visibility = Visibility.Hidden;
+                LabelWindowDrag.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                LabelTitleText.Visibility = Visibility.Visible;
+                LabelWindowDrag.Visibility = Visibility.Hidden;
+            }
         }
 
         private void IsClickedForDrag(object sender, MouseEventArgs mouseEventArgs)
@@ -257,8 +279,8 @@ namespace OneClickCopy
 
         private void IsToggledCheckBoxCanBeTransparent(object sender, RoutedEventArgs e)
         {
-            if(checkboxCanBeTransparent.IsChecked != null)
-                CanBeTransparent = (bool)checkboxCanBeTransparent.IsChecked;
+            if(CheckBoxCanBeTransparent.IsChecked != null)
+                CanBeTransparent = (bool)CheckBoxCanBeTransparent.IsChecked;
 
             if (CanBeTransparent)
                 LaunchToastNotification(messageResourceManager.GetString("WindowCanBeTransparent"));
@@ -304,13 +326,13 @@ namespace OneClickCopy
 
             Dispatcher.BeginInvoke((Action)(() =>
             {
-                Opacity = sliderOpacityAtMouseLeaving.Value;
+                Opacity = SliderOpacityAtMouseLeaving.Value;
             }));
         }
 
         private void IsFixedOpacitySlide(object sender, RoutedEventArgs e)
         {
-            OpacityAtMouseLeaving = sliderOpacityAtMouseLeaving.Value;
+            OpacityAtMouseLeaving = SliderOpacityAtMouseLeaving.Value;
 
             if (CanBeTransparent && !IsMouseOverAtThisMoment())
                 Opacity = OpacityAtMouseLeaving;
@@ -324,7 +346,7 @@ namespace OneClickCopy
         {
             if (e.Key == Key.Left || e.Key == Key.Right || e.Key == Key.Up || e.Key == Key.Down)
             {
-                OpacityAtMouseLeaving = sliderOpacityAtMouseLeaving.Value;
+                OpacityAtMouseLeaving = SliderOpacityAtMouseLeaving.Value;
 
                 if (IsMouseOverAtThisMoment())
                     Opacity = 1;
