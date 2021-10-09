@@ -113,7 +113,7 @@ namespace OneClickCopy
                     string.Format(formattedFixedMessage, nowTitle) :
                     string.Format(formattedFixedMessage, nowTitle.Substring(0, 10) + "..." + nowTitle.Substring(nowTitle.Length - 5));
 
-                messageNotifier?.LaunchTheMessage(titleIsFixedString);
+                TryToLaunchThisMessage(titleIsFixedString);
             }
             else
             {
@@ -122,7 +122,7 @@ namespace OneClickCopy
                 string titleIsUnfixedString
                     = messageResourceManager.GetString("CopyButtonTitleUnfixed");
 
-                messageNotifier?.LaunchTheMessage(titleIsUnfixedString);
+                TryToLaunchThisMessage(titleIsUnfixedString);
             }
         }
 
@@ -136,10 +136,10 @@ namespace OneClickCopy
                 if (IsPointedFromClipboard != null)
                     IsPointedFromClipboard(this, EventArgs.Empty);
 
-                messageNotifier?.LaunchTheMessage(messageResourceManager.GetString("CopyButtonCopiedData"));
+                TryToLaunchThisMessage(messageResourceManager.GetString("CopyButtonCopiedData"));
             }
             else
-                messageNotifier?.LaunchTheMessage(messageResourceManager.GetString("CopyButtonOwnCopyIsEmpty"));
+                TryToLaunchThisMessage(messageResourceManager.GetString("CopyButtonOwnCopyIsEmpty"));
         }
 
         public void OpenInfoPopupByCopyButton(object sender, MouseEventArgs mouseEvent)
@@ -171,7 +171,7 @@ namespace OneClickCopy
             bool BothCopiesAreEqual = HasOwnCopy && Clipboard.IsCurrent(OwnCopy);
             if (BothCopiesAreEqual)
             {
-                messageNotifier?.LaunchTheMessage(messageResourceManager.GetString("CopyButtonIsExistingData"));
+                TryToLaunchThisMessage(messageResourceManager.GetString("CopyButtonIsExistingData"));
                 return;
             }
 
@@ -179,7 +179,7 @@ namespace OneClickCopy
 
             if (currentClipboardData.GetFormats().Length == 0)
             {
-                messageNotifier?.LaunchTheMessage(messageResourceManager.GetString("CopyButtonClipboardIsEmpty"));
+                TryToLaunchThisMessage(messageResourceManager.GetString("CopyButtonClipboardIsEmpty"));
                 return;
             }
 
@@ -220,11 +220,17 @@ namespace OneClickCopy
             if(IsPointedFromClipboard != null)
                 IsPointedFromClipboard(this, EventArgs.Empty);
 
-            messageNotifier?.LaunchTheMessage(messageResourceManager.GetString("CopyButtonSavedNewData"));
+            TryToLaunchThisMessage(messageResourceManager.GetString("CopyButtonSavedNewData"));
         }
 
-        public void OpenInfoPopupByEditButton(object sender, EventArgs _)
+        public void OpenInfoPopupByEditButton(object sender, EventArgs e)
         {
+            if (!HasOwnCopy)
+            {
+                TryToLaunchThisMessage(messageResourceManager.GetString("EditButtonOwnCopyDoesntExist"));
+                return;
+            }
+
             IsEditting = false;
             lastOwnCopyInfoPopup = new OwnCopyInfoPopup(EditButton);
             lastOwnCopyInfoPopup.TitleTextBox.Text = OwnCopyTitleText.Text;
@@ -257,17 +263,15 @@ namespace OneClickCopy
             BindingOperations.SetBinding(OwnCopyTitleText, TextBlock.TextProperty, titleBinding);
         }
 
+        private void TryToLaunchThisMessage(string message)
+        {
+            messageNotifier?.LaunchTheMessage(message);
+        }
+
         private void ReportPopupClose(object reporter, EventArgs e)
         {
             if (reporter == lastOwnCopyInfoPopup)
                 IsEditting = false;
         }
-
-        /*public void SetOwnCopyPersisted(object sender, EventArgs e)
-        {
-            Debug.WriteLine("Unloaded! state : " + Clipboard.IsCurrent(OwnCopy));
-            if (HasOwnCopy && Clipboard.IsCurrent(OwnCopy))
-                Clipboard.SetDataObject(OwnCopy, true);
-        }*/
     }
 }

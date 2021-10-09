@@ -138,6 +138,9 @@
   <data name="CopyButtonTitleUnfixed" xml:space="preserve">
     <value>더 이상 버튼 타이틀이 고정되지 않습니다.</value>
   </data>
+  <data name="EditButtonOwnCopyDoesntExist" xml:space="preserve">
+    <value>저장된 내용이 없습니다.</value>
+  </data>
   <data name="WindowCanBeTransparent" xml:space="preserve">
     <value>커서가 밖으로 나가면 창이 투명해집니다.</value>
   </data>

@@ -231,15 +231,20 @@ namespace OneClickCopy
             if (ClipboardLineListPanel.Children.Count > 0 &&
                 ClipboardLineListPanel.Children[0] is FrameworkElement)
             {
-                double copyPanelMinWidth = ((FrameworkElement)ClipboardLineListPanel.Children[0]).MinWidth;
+                FrameworkElement firstLinePanel = (FrameworkElement)ClipboardLineListPanel.Children[0];
+
+                double copyPanelMinWidth = firstLinePanel.MinWidth;
                 ClipboardLineListPanel.MinWidth = copyPanelMinWidth;
 
                 double customTitleBarWidth = CustomTitleBar.ActualWidth;
 
                 double resizeBorderWidth 
                     = NowWindowChrome.ResizeBorderThickness.Left + NowWindowChrome.ResizeBorderThickness.Right;
-                
+                double resizeBorderHeight
+                    = NowWindowChrome.ResizeBorderThickness.Top + NowWindowChrome.ResizeBorderThickness.Bottom;
+
                 MinWidth = Math.Max(copyPanelMinWidth, customTitleBarWidth) + resizeBorderWidth;
+                MinHeight = CustomTitleBar.ActualHeight + firstLinePanel.Height + resizeBorderHeight;
 
                 SetWindowDragElementsVisibility();
             }
