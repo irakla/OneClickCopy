@@ -41,9 +41,9 @@ namespace OneClickCopy.Templates
 
                 if (HasTextData)
                 {
-                    if (OwnCopyContentLabel.Content is TextBox)
+                    if (ownCopyContentLabel.Content is TextBox)
                     {
-                        TextBox nowTextBox = (TextBox)OwnCopyContentLabel.Content;
+                        TextBox nowTextBox = (TextBox)ownCopyContentLabel.Content;
                         nowTextBox.Text += (string)value.GetData(DataFormats.Text);
                     }
                 }
@@ -88,8 +88,8 @@ namespace OneClickCopy.Templates
                     break;
                 }
 
-                TitleTextBox.Text = newTitleText;
-                TitleTextBox.SelectAll();
+                titleTextBox.Text = newTitleText;
+                titleTextBox.SelectAll();
             }
         }
 
@@ -102,8 +102,8 @@ namespace OneClickCopy.Templates
             
             ShowTextContent();
 
-            TitleTextBox.Focus();
-            TitleTextBox.SelectAll();
+            titleTextBox.Focus();
+            titleTextBox.SelectAll();
         }
 
         private void ShowTextContent()
@@ -114,7 +114,7 @@ namespace OneClickCopy.Templates
             txtboxCopyingContent.IsReadOnly = true;
             txtboxCopyingContent.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
             txtboxCopyingContent.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
-            OwnCopyContentLabel.Content = txtboxCopyingContent;
+            ownCopyContentLabel.Content = txtboxCopyingContent;
         }
 
         private void CloseInfoPopup(object sender, EventArgs e)
@@ -127,7 +127,7 @@ namespace OneClickCopy.Templates
 
         private void EnterProcedurePopupClosing()
         {
-            BindingOperations.ClearBinding(TitleTextBox, TextBlock.TextProperty);
+            BindingOperations.ClearBinding(titleTextBox, TextBlock.TextProperty);
             IsOpen = false;
 
             UnsubscribeEventsClosingInfoPopup();

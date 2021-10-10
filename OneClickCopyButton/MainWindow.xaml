@@ -17,7 +17,7 @@
         <CommandBinding Command="{x:Static SystemCommands.MinimizeWindowCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_MinimizeWindow" />
     </Window.CommandBindings>
     <WindowChrome.WindowChrome>
-        <WindowChrome x:Name="NowWindowChrome"
+        <WindowChrome x:Name="nowWindowChrome"
             CaptionHeight="0" ResizeBorderThickness="5" UseAeroCaptionButtons="False"/>
     </WindowChrome.WindowChrome>
     <Window.Style>
@@ -27,15 +27,15 @@
         </Style>
     </Window.Style>
     <Border Name="background" BorderThickness="2" BorderBrush="LightGray">
-        <DockPanel x:Name="MainWindowDockPanel">
-            <Border Name="TitleArea" DockPanel.Dock="Top" Height="32" BorderBrush="LightGray" BorderThickness="0.5">
+        <DockPanel x:Name="mainWindowDockPanel">
+            <Border Name="titleArea" DockPanel.Dock="Top" Height="32" BorderBrush="LightGray" BorderThickness="0.5">
                 <Grid>
-                    <Label x:Name="LabelTitleText"
+                    <Label x:Name="labelTitleText"
                         VerticalContentAlignment="Center" Margin="0,0,10,0" MouseDown="IsClickedForDrag">
                         <TextBlock Text="{Binding Title, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}"/>
                     </Label>
 
-                    <Grid x:Name="CustomTitleBar" HorizontalAlignment="Right" Background="Transparent" Height="32"
+                    <Grid x:Name="customTitleBar" HorizontalAlignment="Right" Background="Transparent" Height="32"
                           MouseDown="IsClickedForDrag">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="35"/>
@@ -71,7 +71,7 @@
                             </Style>
                         </Grid.Resources>
 
-                        <Label Grid.Column="0" x:Name="LabelWindowDrag" Height="32" Width="35" Visibility="Hidden"
+                        <Label Grid.Column="0" x:Name="labelWindowDrag" Height="32" Width="35" Visibility="Hidden"
                                MouseDown="IsClickedForDrag" Background="White">
                             <Canvas HorizontalAlignment="Center" VerticalAlignment="Center">
                                 <Rectangle Height="25" Width="25"
@@ -88,7 +88,7 @@
                         </Label>
 
                         <Border Grid.Column="1" Background="White" HorizontalAlignment="Center">
-                            <CheckBox x:Name="CheckBoxCanBeTransparent"
+                            <CheckBox x:Name="checkBoxCanBeTransparent"
                                       
                                       Checked="IsToggledCheckBoxCanBeTransparent" Unchecked="IsToggledCheckBoxCanBeTransparent">
                                 <Canvas Height="32" Width="35" Background="White">
@@ -101,7 +101,7 @@
                             </CheckBox>
                         </Border>
 
-                        <Slider Grid.Column="2" x:Name="SliderOpacityAtMouseLeaving" 
+                        <Slider Grid.Column="2" x:Name="sliderOpacityAtMouseLeaving" 
                                 HorizontalAlignment="Stretch" VerticalAlignment="Center" 
                                 Background="White"
                                 Orientation="Horizontal"
@@ -164,17 +164,17 @@
                 </Grid>
             </Border>
             
-            <Grid x:Name="ClipboardLineListBackground">
+            <Grid x:Name="clipboardLineListBackground">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="1*"/>
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0">
-                    <StackPanel x:Name="ClipboardLineListPanel" Orientation="Vertical"
+                    <StackPanel x:Name="clipboardLineListPanel" Orientation="Vertical"
                                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                                 Background="Transparent">
                     </StackPanel>
 
-                    <local:ToastNotifier x:Name="MessageNotifier" Opacity="0"
+                    <local:ToastNotifier x:Name="messageNotifier" Opacity="0"
                         Margin="15"  HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
                 </Grid>
                 

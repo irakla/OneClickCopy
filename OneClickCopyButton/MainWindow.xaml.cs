@@ -50,7 +50,7 @@ namespace OneClickCopy
             set
             {
                 double availableLeftBound = SystemParameters.VirtualScreenLeft - (Width != double.NaN ? Width : 0);
-                double availableTopBound = SystemParameters.VirtualScreenTop - (TitleArea.Height != double.NaN ? TitleArea.Height : 0);
+                double availableTopBound = SystemParameters.VirtualScreenTop - (titleArea.Height != double.NaN ? titleArea.Height : 0);
                 double availableRightBound = SystemParameters.VirtualScreenWidth;
                 double availableBottomBound = SystemParameters.VirtualScreenHeight;
 
@@ -97,10 +97,10 @@ namespace OneClickCopy
 
         public bool CanBeTransparent
         {
-            get => CheckBoxCanBeTransparent.IsChecked != null && (bool)CheckBoxCanBeTransparent.IsChecked;
+            get => checkBoxCanBeTransparent.IsChecked != null && (bool)checkBoxCanBeTransparent.IsChecked;
             set
             {
-                CheckBoxCanBeTransparent.IsChecked = value;
+                checkBoxCanBeTransparent.IsChecked = value;
 
                 if (IsReadyMainWindowSettingController)
                     mainWindowSettingsController.SetCanBeTransparent(value);
@@ -109,15 +109,15 @@ namespace OneClickCopy
 
         public double OpacityAtMouseLeaving
         {
-            get => SliderOpacityAtMouseLeaving.Value;
+            get => sliderOpacityAtMouseLeaving.Value;
             set
             {
                 if (value > 1.0)
-                    SliderOpacityAtMouseLeaving.Value = 1.0;
-                else if (value < SliderOpacityAtMouseLeaving.Minimum)
-                    SliderOpacityAtMouseLeaving.Value = SliderOpacityAtMouseLeaving.Minimum;
+                    sliderOpacityAtMouseLeaving.Value = 1.0;
+                else if (value < sliderOpacityAtMouseLeaving.Minimum)
+                    sliderOpacityAtMouseLeaving.Value = sliderOpacityAtMouseLeaving.Minimum;
                 else
-                    SliderOpacityAtMouseLeaving.Value = value;
+                    sliderOpacityAtMouseLeaving.Value = value;
 
                 if(animationOpacityToTransparent != null)
                     animationOpacityToTransparent.To = value;
@@ -143,7 +143,7 @@ namespace OneClickCopy
         }
 
         public void LaunchToastNotification(string message)
-            => MessageNotifier.LaunchTheMessage(message);
+            => messageNotifier.LaunchTheMessage(message);
 
         private void UpdatePinEdgeVisiblity()
         {
@@ -166,7 +166,7 @@ namespace OneClickCopy
             foreach (OwnCopyLinePanel nowClipboardLine in
                 showingClipboardLineList.ClipboardLines)
             {
-                ClipboardLineListPanel.Children.Add(nowClipboardLine);
+                clipboardLineListPanel.Children.Add(nowClipboardLine);
             }
 
             InitializeFadeInOutAnimation();
@@ -205,7 +205,7 @@ namespace OneClickCopy
                 mainWindowSettingsController.ApplyAllCurrentSettings();
             }
 
-            MessageNotifier.DisableLock();
+            messageNotifier.DisableLock();
         }
 
         private void InitializeFadeInOutAnimation()
@@ -228,23 +228,23 @@ namespace OneClickCopy
 
         private void SetWindowConstraintsWithElements(object sender, RoutedEventArgs e)
         {
-            if (ClipboardLineListPanel.Children.Count > 0 &&
-                ClipboardLineListPanel.Children[0] is FrameworkElement)
+            if (clipboardLineListPanel.Children.Count > 0 &&
+                clipboardLineListPanel.Children[0] is FrameworkElement)
             {
-                FrameworkElement firstLinePanel = (FrameworkElement)ClipboardLineListPanel.Children[0];
+                FrameworkElement firstLinePanel = (FrameworkElement)clipboardLineListPanel.Children[0];
 
                 double copyPanelMinWidth = firstLinePanel.MinWidth;
-                ClipboardLineListPanel.MinWidth = copyPanelMinWidth;
+                clipboardLineListPanel.MinWidth = copyPanelMinWidth;
 
-                double customTitleBarWidth = CustomTitleBar.ActualWidth;
+                double customTitleBarWidth = customTitleBar.ActualWidth;
 
                 double resizeBorderWidth 
-                    = NowWindowChrome.ResizeBorderThickness.Left + NowWindowChrome.ResizeBorderThickness.Right;
+                    = nowWindowChrome.ResizeBorderThickness.Left + nowWindowChrome.ResizeBorderThickness.Right;
                 double resizeBorderHeight
-                    = NowWindowChrome.ResizeBorderThickness.Top + NowWindowChrome.ResizeBorderThickness.Bottom;
+                    = nowWindowChrome.ResizeBorderThickness.Top + nowWindowChrome.ResizeBorderThickness.Bottom;
 
                 MinWidth = Math.Max(copyPanelMinWidth, customTitleBarWidth) + resizeBorderWidth;
-                MinHeight = CustomTitleBar.ActualHeight + firstLinePanel.Height + resizeBorderHeight;
+                MinHeight = customTitleBar.ActualHeight + firstLinePanel.Height + resizeBorderHeight;
 
                 SetWindowDragElementsVisibility();
             }
@@ -254,13 +254,13 @@ namespace OneClickCopy
         {
             if (Width == MinWidth)
             {
-                LabelTitleText.Visibility = Visibility.Hidden;
-                LabelWindowDrag.Visibility = Visibility.Visible;
+                labelTitleText.Visibility = Visibility.Hidden;
+                labelWindowDrag.Visibility = Visibility.Visible;
             }
             else
             {
-                LabelTitleText.Visibility = Visibility.Visible;
-                LabelWindowDrag.Visibility = Visibility.Hidden;
+                labelTitleText.Visibility = Visibility.Visible;
+                labelWindowDrag.Visibility = Visibility.Hidden;
             }
         }
 
@@ -284,8 +284,8 @@ namespace OneClickCopy
 
         private void IsToggledCheckBoxCanBeTransparent(object sender, RoutedEventArgs e)
         {
-            if(CheckBoxCanBeTransparent.IsChecked != null)
-                CanBeTransparent = (bool)CheckBoxCanBeTransparent.IsChecked;
+            if(checkBoxCanBeTransparent.IsChecked != null)
+                CanBeTransparent = (bool)checkBoxCanBeTransparent.IsChecked;
 
             if (CanBeTransparent)
                 LaunchToastNotification(messageResourceManager.GetString("WindowCanBeTransparent"));
@@ -331,13 +331,13 @@ namespace OneClickCopy
 
             Dispatcher.BeginInvoke((Action)(() =>
             {
-                Opacity = SliderOpacityAtMouseLeaving.Value;
+                Opacity = sliderOpacityAtMouseLeaving.Value;
             }));
         }
 
         private void IsFixedOpacitySlide(object sender, RoutedEventArgs e)
         {
-            OpacityAtMouseLeaving = SliderOpacityAtMouseLeaving.Value;
+            OpacityAtMouseLeaving = sliderOpacityAtMouseLeaving.Value;
 
             if (CanBeTransparent && !IsMouseOverAtThisMoment())
                 Opacity = OpacityAtMouseLeaving;
@@ -351,7 +351,7 @@ namespace OneClickCopy
         {
             if (e.Key == Key.Left || e.Key == Key.Right || e.Key == Key.Up || e.Key == Key.Down)
             {
-                OpacityAtMouseLeaving = SliderOpacityAtMouseLeaving.Value;
+                OpacityAtMouseLeaving = sliderOpacityAtMouseLeaving.Value;
 
                 if (IsMouseOverAtThisMoment())
                     Opacity = 1;
@@ -386,10 +386,10 @@ namespace OneClickCopy
 
         private bool IsMouseOverAtThisMoment()
         {
-            int WindowBorderLeft = (int)(Left + NowWindowChrome.ResizeBorderThickness.Left);
-            int WindowBorderRight = (int)(Left + Width - NowWindowChrome.ResizeBorderThickness.Right);
-            int WindowBorderTop = (int)(Top + NowWindowChrome.ResizeBorderThickness.Top);
-            int WindowBorderBottom = (int)(Top + Height - NowWindowChrome.ResizeBorderThickness.Bottom);
+            int WindowBorderLeft = (int)(Left + nowWindowChrome.ResizeBorderThickness.Left);
+            int WindowBorderRight = (int)(Left + Width - nowWindowChrome.ResizeBorderThickness.Right);
+            int WindowBorderTop = (int)(Top + nowWindowChrome.ResizeBorderThickness.Top);
+            int WindowBorderBottom = (int)(Top + Height - nowWindowChrome.ResizeBorderThickness.Bottom);
             
             POINTWin32 cursorPosition;
             

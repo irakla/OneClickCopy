@@ -48,7 +48,7 @@ namespace OneClickCopy
                 return;
 
             InitializeNotifier();
-            MessageTextBlock.Text = message;
+            messageTextBlock.Text = message;
             Visibility = Visibility.Visible;
 
             Storyboard storyboardFadeIn = (Storyboard)(Resources["StoryboardFadeIn"]);
@@ -56,7 +56,7 @@ namespace OneClickCopy
             BeginStoryboard(storyboardFadeIn);
         }
 
-        public void InitializeNotifier()
+        private void InitializeNotifier()
         {
             if (showTimer.IsEnabled)
                 showTimer.Stop();
@@ -95,7 +95,7 @@ namespace OneClickCopy
             if (!isClickedCloseNotificationButton)
                 FadeOut();
 
-            if (sender == CloseNotificationButton)
+            if (sender == closeNotificationButton)
                 isClickedCloseNotificationButton = true;
         }
 

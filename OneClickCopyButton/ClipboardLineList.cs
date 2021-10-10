@@ -24,7 +24,7 @@ namespace OneClickCopy
             for (int i = 0; i < minimumLine; i++)
             {
                 OwnCopyLinePanel nowLinePanel = new OwnCopyLinePanel();
-                nowLinePanel.IsPointedFromClipboard += GetLatestCopy;
+                nowLinePanel.PointedFromClipboard += GetLatestCopy;
                 clipboardLineList.Add(nowLinePanel);
             }
         }

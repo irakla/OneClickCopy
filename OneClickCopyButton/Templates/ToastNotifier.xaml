@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:OneClickCopy"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d"
-             x:Name="ToastNotificationBackground"
+             x:Name="toastNotificationBackground"
              Visibility="Hidden"
              CornerRadius="15" Width="Auto" MinHeight="20" Background="LightGray"
              MouseEnter="PreserveTheMessage" MouseLeave="OutTheMessage"
@@ -14,13 +14,13 @@
     <Border.Resources>
         <Storyboard x:Key="StoryboardFadeIn" Completed="WaitAndOut">
             <DoubleAnimation
-                Storyboard.TargetName="ToastNotificationBackground"
+                Storyboard.TargetName="toastNotificationBackground"
                 Storyboard.TargetProperty="Opacity"
                 From="0.0" To="1.0" Duration="0:0:0.5" FillBehavior="Stop"/>
         </Storyboard>
         <Storyboard x:Key="StoryboardFadeOut" Completed="MakeHidden">
             <DoubleAnimation
-                Storyboard.TargetName="ToastNotificationBackground"
+                Storyboard.TargetName="toastNotificationBackground"
                 Storyboard.TargetProperty="Opacity"
                 From="1.0" To="0.0" Duration="0:0:0.5" FillBehavior="Stop"/>
         </Storyboard>
@@ -32,10 +32,10 @@
             <ColumnDefinition Width="30"/>
         </Grid.ColumnDefinitions>
         
-        <TextBlock Grid.Column="0" x:Name="MessageTextBlock" Margin="15, 0, 15, 0"
+        <TextBlock Grid.Column="0" x:Name="messageTextBlock" Margin="15, 0, 15, 0"
                     HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="13" TextWrapping="Wrap"/>
 
-        <Button Grid.Column="1" x:Name="CloseNotificationButton" Click="OutTheMessage">
+        <Button Grid.Column="1" x:Name="closeNotificationButton" Click="OutTheMessage">
             <Button.Style>
                 <Style TargetType="Button">
                     <Setter Property="Template">

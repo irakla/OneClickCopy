@@ -31,7 +31,7 @@ namespace OneClickCopy
         private ToastNotifier messageNotifier = null;                   //In your code using this, consider it can be null
         private ResourceManager messageResourceManager = new ResourceManager(typeof(OneClickCopy.Properties.MessageResource));
 
-        public event EventHandler IsPointedFromClipboard;
+        public event EventHandler PointedFromClipboard;
 
         private const int ProperCharLengthForDisplaying = 15;
 
@@ -44,11 +44,11 @@ namespace OneClickCopy
 
                 if (isEdittingOwnCopyContent)
                 {
-                    EditButton.Style = (Style)Resources["EdittingLineButton"];
+                    editButton.Style = (Style)Resources["EdittingLineButton"];
                 }
                 else
                 {
-                    EditButton.Style = (Style)Resources["DefaultLineButton"];
+                    editButton.Style = (Style)Resources["DefaultLineButton"];
                     if (lastOwnCopyInfoPopup != null)
                         lastOwnCopyInfoPopup.IsOpen = false;
                 }
@@ -63,9 +63,9 @@ namespace OneClickCopy
                 currentOwnCopy = value;
 
                 if (HasOwnCopy)
-                    CopyButton.Style = (Style)Resources["HasOwnCopyStyle"];
+                    copyButton.Style = (Style)Resources["HasOwnCopyStyle"];
                 else
-                    CopyButton.Style = (Style)Resources["DefaultLineButton"];
+                    copyButton.Style = (Style)Resources["DefaultLineButton"];
             }
         }
 
@@ -74,15 +74,15 @@ namespace OneClickCopy
 
         public bool IsFixedTitle
         {
-            get => TitleFixingButton.IsChecked != null && (bool)TitleFixingButton.IsChecked;
+            get => titleFixingButton.IsChecked != null && (bool)titleFixingButton.IsChecked;
             set 
             {
-                TitleFixingButton.IsChecked = value;
+                titleFixingButton.IsChecked = value;
 
                 if (value)
-                    TitleFixingPinEdge.Visibility = Visibility.Visible;
+                    titleFixingPinEdge.Visibility = Visibility.Visible;
                 else
-                    TitleFixingPinEdge.Visibility = Visibility.Hidden;
+                    titleFixingPinEdge.Visibility = Visibility.Hidden;
             }
         }
 
@@ -97,19 +97,19 @@ namespace OneClickCopy
         {
             MainWindow mainWindow = Application.Current.MainWindow as MainWindow;
 
-            messageNotifier = mainWindow?.MessageNotifier;
+            messageNotifier = mainWindow?.messageNotifier;
         }
 
         public void ToggleTitleFixingButton(object sender, EventArgs e)
         {
             if(IsFixedTitle)
             {
-                TitleFixingPinEdge.Visibility = Visibility.Visible;
+                titleFixingPinEdge.Visibility = Visibility.Visible;
 
                 string formattedFixedMessage = messageResourceManager.GetString("CopyButtonTitleFixed_Formatted");
-                string nowTitle = OwnCopyTitleText.Text;
+                string nowTitle = ownCopyTitleText.Text;
 
-                string titleIsFixedString = OwnCopyTitleText.Text.Length <= ProperCharLengthForDisplaying ?
+                string titleIsFixedString = ownCopyTitleText.Text.Length <= ProperCharLengthForDisplaying ?
                     string.Format(formattedFixedMessage, nowTitle) :
                     string.Format(formattedFixedMessage, nowTitle.Substring(0, 10) + "..." + nowTitle.Substring(nowTitle.Length - 5));
 
@@ -117,7 +117,7 @@ namespace OneClickCopy
             }
             else
             {
-                TitleFixingPinEdge.Visibility = Visibility.Hidden;
+                titleFixingPinEdge.Visibility = Visibility.Hidden;
 
                 string titleIsUnfixedString
                     = messageResourceManager.GetString("CopyButtonTitleUnfixed");
@@ -133,8 +133,8 @@ namespace OneClickCopy
                 Clipboard.Clear();
                 Clipboard.SetDataObject(OwnCopy);
 
-                if (IsPointedFromClipboard != null)
-                    IsPointedFromClipboard(this, EventArgs.Empty);
+                if (PointedFromClipboard != null)
+                    PointedFromClipboard(this, EventArgs.Empty);
 
                 TryToLaunchThisMessage(messageResourceManager.GetString("CopyButtonCopiedData"));
             }
@@ -158,7 +158,7 @@ namespace OneClickCopy
                 };
 
                 if (IsFixedTitle)
-                    lastOwnCopyInfoPopup.TitleTextBox.Text = OwnCopyTitleText.Text;
+                    lastOwnCopyInfoPopup.titleTextBox.Text = ownCopyTitleText.Text;
                 else
                     lastOwnCopyInfoPopup.SetTitleFromData();
 
@@ -217,8 +217,8 @@ namespace OneClickCopy
             Clipboard.Clear();
             Clipboard.SetDataObject(OwnCopy);
 
-            if(IsPointedFromClipboard != null)
-                IsPointedFromClipboard(this, EventArgs.Empty);
+            if(PointedFromClipboard != null)
+                PointedFromClipboard(this, EventArgs.Empty);
 
             TryToLaunchThisMessage(messageResourceManager.GetString("CopyButtonSavedNewData"));
         }
@@ -232,8 +232,8 @@ namespace OneClickCopy
             }
 
             IsEditting = false;
-            lastOwnCopyInfoPopup = new OwnCopyInfoPopup(EditButton);
-            lastOwnCopyInfoPopup.TitleTextBox.Text = OwnCopyTitleText.Text;
+            lastOwnCopyInfoPopup = new OwnCopyInfoPopup(editButton);
+            lastOwnCopyInfoPopup.titleTextBox.Text = ownCopyTitleText.Text;
             SetCopyInfoPopupCommon();
 
             if(HasOwnCopy)
@@ -254,13 +254,13 @@ namespace OneClickCopy
         private void BindTitleTextControls()
         {
             var titleBinding = new Binding("Text");
-            var bindingTitleTextBox = lastOwnCopyInfoPopup.TitleTextBox;
+            var bindingTitleTextBox = lastOwnCopyInfoPopup.titleTextBox;
 
             titleBinding.Source = bindingTitleTextBox;
             titleBinding.Mode = BindingMode.OneWay;
             titleBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
 
-            BindingOperations.SetBinding(OwnCopyTitleText, TextBlock.TextProperty, titleBinding);
+            BindingOperations.SetBinding(ownCopyTitleText, TextBlock.TextProperty, titleBinding);
         }
 
         private void TryToLaunchThisMessage(string message)

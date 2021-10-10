@@ -9,7 +9,7 @@
        Width="Auto" MinWidth="100" MouseDown="MouseTest" KeyDown="KeyInteraction"
        d:DesignHeight="450" d:DesignWidth="800">
     <Border BorderBrush="Black" BorderThickness="0.5" Background="LightBlue">
-        <Grid x:Name="InfoPopupGrid">
+        <Grid x:Name="infoPopupGrid">
             <Grid.Resources>
                 <Style x:Key="OwnCopyDescriptionFont" TargetType="{x:Type TextBlock}">
                     <Setter Property="FontWeight" Value="Normal"/>
@@ -33,7 +33,7 @@
                 </TextBlock.Inlines>
             </TextBlock>
 
-            <TextBox Grid.Row="1" Style="{StaticResource OwnCopyContentFont}" x:Name="TitleTextBox" Margin="2,2,2,2"
+            <TextBox Grid.Row="1" Style="{StaticResource OwnCopyContentFont}" x:Name="titleTextBox" Margin="2,2,2,2"
                      MaxLines="1" TextWrapping="NoWrap"
                      Text="{x:Static resui:UIResource.TextThisDataDoesntHaveTitleText}"/>
 
@@ -43,7 +43,7 @@
                 </TextBlock.Inlines>
             </TextBlock>
 
-            <Label Grid.Row="3" x:Name="OwnCopyContentLabel" 
+            <Label Grid.Row="3" x:Name="ownCopyContentLabel" 
                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"/>
         </Grid>
     </Border>
