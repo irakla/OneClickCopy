@@ -11,7 +11,8 @@
         WindowStyle="None" AllowsTransparency="True" BorderBrush="Black" BorderThickness="2"
         WindowStartupLocation="CenterScreen"
         MouseLeave="MakeWindowTransparent" MouseEnter="MakeWindowThick" 
-        LocationChanged="NotifyIsChangedPositionOnScreen">
+        LocationChanged="NotifyIsChangedPositionOnScreen"
+        DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <Window.CommandBindings>
         <CommandBinding Command="{x:Static SystemCommands.CloseWindowCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_CloseWindow" />
         <CommandBinding Command="{x:Static SystemCommands.MinimizeWindowCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_MinimizeWindow" />
@@ -169,10 +170,27 @@
                     <RowDefinition Height="1*"/>
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0">
-                    <StackPanel x:Name="clipboardLineListPanel" Orientation="Vertical"
+                    <!--StackPanel x:Name="clipboardLineListPanel" Orientation="Vertical"
                                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                                 Background="Transparent">
-                    </StackPanel>
+                    </StackPanel-->
+
+                    <!--ItemsControl x:Name="ownCopyLineListPanel" ItemsSource="{Binding Path=OwnCopyCollection}"
+                        HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Vertical"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <local:OwnCopyLinePanel />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl-->
+
+                    <local:OwnCopyLineListPanel x:Name="ownCopyLineListPanel" ItemsSource="{Binding Path=OwnCopyCollection}"
+                                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent"/>
 
                     <local:ToastNotifier x:Name="messageNotifier" Opacity="0"
                         Margin="15"  HorizontalAlignment="Center" VerticalAlignment="Bottom"/>

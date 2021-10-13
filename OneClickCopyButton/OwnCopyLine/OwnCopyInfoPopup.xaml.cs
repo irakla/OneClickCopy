@@ -15,7 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace OneClickCopy.Templates
+namespace OneClickCopy.OwnCopyLine
 {
     public partial class OwnCopyInfoPopup : Popup
     {
@@ -68,6 +68,19 @@ namespace OneClickCopy.Templates
             OpenInfoPopup();
         }
 
+        private void OpenInfoPopup()
+        {
+            IsOpen = true;
+            StaysOpen = true;
+
+            SubscribeEventsClosingInfoPopup();
+
+            ShowTextContent();
+
+            titleTextBox.Focus();
+            titleTextBox.SelectAll();
+        }
+
         public void SetTitleFromData()
         {
             if (HasTextData)
@@ -93,19 +106,6 @@ namespace OneClickCopy.Templates
             }
         }
 
-        private void OpenInfoPopup()
-        {
-            IsOpen = true;
-            StaysOpen = true;
-
-            SubscribeEventsClosingInfoPopup();
-            
-            ShowTextContent();
-
-            titleTextBox.Focus();
-            titleTextBox.SelectAll();
-        }
-
         private void ShowTextContent()
         {
             TextBox txtboxCopyingContent = new TextBox();
@@ -123,6 +123,12 @@ namespace OneClickCopy.Templates
                 return;
 
             EnterProcedurePopupClosing();
+        }
+
+        private void KeyInteraction(object sender, KeyEventArgs keyEvent)
+        {
+            if (keyEvent.Key == Key.Enter)
+                EnterProcedurePopupClosing();
         }
 
         private void EnterProcedurePopupClosing()
@@ -147,12 +153,6 @@ namespace OneClickCopy.Templates
             currentMainWindow.Deactivated -= CloseInfoPopup;
             currentMainWindow.PreviewMouseDown -= CloseInfoPopup;
             currentMainWindow.PreviewMouseRightButtonDown -= CloseInfoPopup;
-        }
-
-        private void KeyInteraction(object sender, KeyEventArgs keyEvent)
-        {
-            if (keyEvent.Key == Key.Enter)
-                EnterProcedurePopupClosing();
         }
 
         private void MouseTest(object sender, MouseEventArgs e)

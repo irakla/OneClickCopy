@@ -18,6 +18,8 @@
         <ColumnDefinition Width="40"/>
     </Grid.ColumnDefinitions>
     <Grid.Resources>
+        <local:OwnCopyLinePanel x:Key="OwnCopyLinePanelSource"/>
+
         <SolidColorBrush x:Key="ButtonBorderBrush" Color="Black" />
         <LinearGradientBrush x:Key="ButtonBackgroundBrush" StartPoint="0, 0" EndPoint="0,1">
             <GradientStop Color="LightGray" Offset="0.0"/>
@@ -41,9 +43,7 @@
                         <Border Name="buttonBorder" 
                                 CornerRadius="5" BorderThickness="1" BorderBrush="{StaticResource ButtonBorderBrush}"
                                 Background="{TemplateBinding Background}" >
-                            <ContentPresenter>
-                                
-                            </ContentPresenter>
+                            <ContentPresenter/>
                         </Border>
 
                         <ControlTemplate.Triggers>
@@ -131,7 +131,8 @@
         <Grid>
             <TextBlock x:Name="ownCopyTitleText" 
                        HorizontalAlignment="Center"  VerticalAlignment="Center"
-                       Text="Empty" FontSize="15"
+                       Text="{Binding Path=Title, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                       FontSize="15"
                        ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=Text}"/>
             <TextBlock x:Name="leftClickDescriptionText" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="4, 4, 0, 0"
                        Foreground="LightSlateGray" FontSize="9" FontWeight="Normal">
@@ -139,7 +140,7 @@
                     <Style TargetType="{x:Type TextBlock}">
                         <Setter Property="Visibility" Value="Hidden"/>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding ElementName=CopyButton, Path=IsMouseOver}" Value="True">
+                            <DataTrigger Binding="{Binding ElementName=copyButton, Path=IsMouseOver}" Value="True">
                                 <Setter Property="Visibility" Value="Visible"/>
                             </DataTrigger>
                         </Style.Triggers>
@@ -153,7 +154,7 @@
                     <Style TargetType="{x:Type TextBlock}">
                         <Setter Property="Visibility" Value="Hidden"/>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding ElementName=CopyButton, Path=IsMouseOver}" Value="True">
+                            <DataTrigger Binding="{Binding ElementName=copyButton, Path=IsMouseOver}" Value="True">
                                 <Setter Property="Visibility" Value="Visible"/>
                             </DataTrigger>
                         </Style.Triggers>

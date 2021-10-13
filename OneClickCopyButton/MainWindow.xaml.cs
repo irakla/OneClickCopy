@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Diagnostics;
 using System.IO;
@@ -23,12 +24,11 @@ using System.Windows.Shapes;
 
 namespace OneClickCopy
 {
-
     public partial class MainWindow : Window
     {
         private bool isPinnedTopmostButton = false;
 
-        private ClipboardLineList showingClipboardLineList = new ClipboardLineList();
+        private OwnCopyCollectionManager _ownCopyCollectionManager = new OwnCopyCollectionManager();
 
         private SettingsFileEntry settingsFileEntry;
         private MainWindowSettingsController mainWindowSettingsController;
@@ -40,8 +40,10 @@ namespace OneClickCopy
         private ResourceManager messageResourceManager = new ResourceManager(typeof(OneClickCopy.Properties.MessageResource));
 
         private bool IsReadyMainWindowSettingController
-        {
-            get => mainWindowSettingsController != null && mainWindowSettingsController.IsLoadedWindowSettings;
+            => mainWindowSettingsController != null && mainWindowSettingsController.IsLoadedWindowSettings;
+
+        public ObservableCollection<OwnCopyData> OwnCopyCollection
+        { get => _ownCopyCollectionManager.OwnCopyCollection;
         }
 
         public Point NowPositionOnScreen
@@ -163,11 +165,11 @@ namespace OneClickCopy
             ApplyBeforeWindowSettings();
 
             //TODO : 클립보드 세팅 로드 및 적용
-            foreach (OwnCopyLinePanel nowClipboardLine in
+            /*foreach (OwnCopyLinePanel nowClipboardLine in
                 showingClipboardLineList.ClipboardLines)
             {
                 clipboardLineListPanel.Children.Add(nowClipboardLine);
-            }
+            }*/
 
             InitializeFadeInOutAnimation();
         }
@@ -228,13 +230,13 @@ namespace OneClickCopy
 
         private void SetWindowConstraintsWithElements(object sender, RoutedEventArgs e)
         {
-            if (clipboardLineListPanel.Children.Count > 0 &&
-                clipboardLineListPanel.Children[0] is FrameworkElement)
+            if (ownCopyLineListPanel.Items.Count > 0 &&
+                ownCopyLineListPanel.Items[0] is FrameworkElement)
             {
-                FrameworkElement firstLinePanel = (FrameworkElement)clipboardLineListPanel.Children[0];
+                FrameworkElement firstLinePanel = (FrameworkElement)ownCopyLineListPanel.Items[0];
 
                 double copyPanelMinWidth = firstLinePanel.MinWidth;
-                clipboardLineListPanel.MinWidth = copyPanelMinWidth;
+                ownCopyLineListPanel.MinWidth = copyPanelMinWidth;
 
                 double customTitleBarWidth = customTitleBar.ActualWidth;
 
@@ -403,7 +405,7 @@ namespace OneClickCopy
 
         private void MakePersistentCopy(object sender, EventArgs e)
         {
-            IDataObject latestCopy = showingClipboardLineList.LatestCopy;
+            IDataObject latestCopy = _ownCopyCollectionManager.LatestCopyContent;
 
             if (latestCopy != null && Clipboard.IsCurrent(latestCopy))
             {
