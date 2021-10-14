@@ -13,10 +13,15 @@ namespace OneClickCopy.OwnCopyLine
         private OwnCopyData _ownCopyData = null;
 
         public static readonly DependencyProperty OwnCopyTitleProperty
-            = DependencyProperty.Register("OwnCopyTitle", typeof(string), typeof(OwnCopyLinePanel));
+            = DependencyProperty.Register(nameof(OwnCopyTitle), typeof(string), typeof(OwnCopyLineViewModel),
+                new PropertyMetadata(string.Empty));
 
         private bool isEdittingOwnCopyContent = false;
         private OwnCopyInfoPopup lastOwnCopyInfoPopup = null;
+
+        public static readonly DependencyProperty IsFixedTitleProperty
+            = DependencyProperty.Register(nameof(IsFixedTitle), typeof(bool), typeof(OwnCopyLineViewModel),
+                new PropertyMetadata(false, OnTitleFixingButtonToggled));
 
         private ToastNotifier _messageNotifier = null;
         private ResourceManager messageResourceManager = new ResourceManager(typeof(OneClickCopy.Properties.MessageResource));
@@ -53,17 +58,8 @@ namespace OneClickCopy.OwnCopyLine
 
         public bool IsFixedTitle
         {
-            get; set;
-            /*get => titleFixingButton.IsChecked != null && (bool)titleFixingButton.IsChecked;
-            set
-            {
-                titleFixingButton.IsChecked = value;
-
-                if (value)
-                    titleFixingPinEdge.Visibility = Visibility.Visible;
-                else
-                    titleFixingPinEdge.Visibility = Visibility.Hidden;
-            }*/
+            get => (bool)GetValue(IsFixedTitleProperty);
+            set => SetValue(IsFixedTitleProperty, value);
         }
 
         public string OwnCopyTitle
@@ -110,18 +106,28 @@ namespace OneClickCopy.OwnCopyLine
                 _ownCopyData = (OwnCopyData)ownCopyData;
             else
                 _ownCopyData = new OwnCopyData();
+
+            OwnCopyTitle = _ownCopyData.Title;
         }
 
-        public void ToggleTitleFixingButton(object sender, EventArgs e)
+        public static void OnTitleFixingButtonToggled(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            /*if (IsFixedTitle)
+            OwnCopyLineViewModel viewModel = sender as OwnCopyLineViewModel;
+
+            if (viewModel != null)
+                viewModel.NotifyTitleFixingButtonToggled((bool)e.NewValue);
+        }
+
+        public void NotifyTitleFixingButtonToggled(bool toggledResult)
+        {
+            if (toggledResult)
             {
-                titleFixingPinEdge.Visibility = Visibility.Visible;
+                const int ProperTitleLengthForDisplaying = 15;
 
                 string formattedFixedMessage = messageResourceManager.GetString("CopyButtonTitleFixed_Formatted");
-                string nowTitle = ownCopyTitleText.Text;
+                string nowTitle = OwnCopyTitle;
 
-                string titleIsFixedString = ownCopyTitleText.Text.Length <= ProperCharLengthForDisplaying ?
+                string titleIsFixedString = nowTitle.Length <= ProperTitleLengthForDisplaying ?
                     string.Format(formattedFixedMessage, nowTitle) :
                     string.Format(formattedFixedMessage, nowTitle.Substring(0, 10) + "..." + nowTitle.Substring(nowTitle.Length - 5));
 
@@ -129,13 +135,11 @@ namespace OneClickCopy.OwnCopyLine
             }
             else
             {
-                titleFixingPinEdge.Visibility = Visibility.Hidden;
-
                 string titleIsUnfixedString
                     = messageResourceManager.GetString("CopyButtonTitleUnfixed");
 
                 TryToLaunchThisMessage(titleIsUnfixedString);
-            }*/
+            }
         }
 
         public void OpenInfoPopupByCopyButton(Point cursorPosition)
