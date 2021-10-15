@@ -14,7 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace OneClickCopy
+namespace OneClickCopy.OwnCopyLines
 {
     public partial class OwnCopyLineListPanel : ItemsControl
     {

@@ -43,8 +43,7 @@ namespace OneClickCopy
             => mainWindowSettingsController != null && mainWindowSettingsController.IsLoadedWindowSettings;
 
         public ObservableCollection<OwnCopyData> OwnCopyCollection
-        { get => _ownCopyCollectionManager.OwnCopyCollection;
-        }
+        { get => _ownCopyCollectionManager.OwnCopyCollection; }
 
         public Point NowPositionOnScreen
         {

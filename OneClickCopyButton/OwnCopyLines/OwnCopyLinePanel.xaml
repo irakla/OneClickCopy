@@ -1,9 +1,10 @@
-﻿<Grid x:Class="OneClickCopy.OwnCopyLinePanel"
+﻿<Grid x:Class="OneClickCopy.OwnCopyLines.OwnCopyLinePanel"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:OneClickCopy"
+      xmlns:copylines="clr-namespace:OneClickCopy.OwnCopyLines"
       xmlns:resui="clr-namespace:OneClickCopy.Properties"
       mc:Ignorable="d"
       Height="70"
@@ -18,8 +19,6 @@
         <ColumnDefinition Width="40"/>
     </Grid.ColumnDefinitions>
     <Grid.Resources>
-        <local:OwnCopyLinePanel x:Key="OwnCopyLinePanelSource"/>
-
         <SolidColorBrush x:Key="ButtonBorderBrush" Color="Black" />
         <LinearGradientBrush x:Key="ButtonBackgroundBrush" StartPoint="0, 0" EndPoint="0,1">
             <GradientStop Color="LightGray" Offset="0.0"/>
@@ -28,15 +27,12 @@
             <GradientStop Color="Gray" Offset="1"/>
         </LinearGradientBrush>
 
-        <Style x:Key="DefaultLineButton" TargetType="{x:Type Button}">
+        <Style x:Key="DefaultLineButtonStyle" TargetType="{x:Type Button}">
             <Setter Property="Margin" Value="5, 10, 5, 10"/>
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
             <Setter Property="VerticalAlignment" Value="Stretch"/>
-            <Setter Property="Background" Value="{StaticResource ButtonBackgroundBrush}">
-            </Setter>
-            
+            <Setter Property="Background" Value="{StaticResource ButtonBackgroundBrush}"/>
             <Setter Property="Padding" Value="3"/>
-            
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Button}">
@@ -45,7 +41,6 @@
                                 Background="{TemplateBinding Background}" >
                             <ContentPresenter/>
                         </Border>
-
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter Property="BorderThickness" TargetName="buttonBorder" Value="3"/>
@@ -58,29 +53,37 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        <Style x:Key="HasOwnCopyStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource DefaultLineButton}">
-            <Setter Property="Background">
-                <Setter.Value>
-                    <LinearGradientBrush StartPoint="0, 0" EndPoint="0,1">
-                        <GradientStop Color="SkyBlue" Offset="0.0"/>
-                        <GradientStop Color="WhiteSmoke" Offset="0.1"/>
-                        <GradientStop Color="WhiteSmoke" Offset="0.75"/>
-                        <GradientStop Color="Gray" Offset="1"/>
-                    </LinearGradientBrush>
-                </Setter.Value>
-            </Setter>
+        <Style x:Key="CopyButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource DefaultLineButtonStyle}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding HasOwnCopyContent}" Value="True">
+                    <Setter Property="Background">
+                        <Setter.Value>
+                            <LinearGradientBrush StartPoint="0, 0" EndPoint="0,1">
+                                <GradientStop Color="SkyBlue" Offset="0.0"/>
+                                <GradientStop Color="WhiteSmoke" Offset="0.1"/>
+                                <GradientStop Color="WhiteSmoke" Offset="0.75"/>
+                                <GradientStop Color="Gray" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Setter.Value>
+                    </Setter>
+                </DataTrigger>
+            </Style.Triggers>
         </Style>
-        <Style x:Key="EdittingLineButton" TargetType="{x:Type Button}" BasedOn="{StaticResource DefaultLineButton}">
-            <Setter Property="Background">
-                <Setter.Value>
-                    <LinearGradientBrush StartPoint="0, 0" EndPoint="0,1">
-                        <GradientStop Color="LightGreen" Offset="0.0"/>
-                        <GradientStop Color="Green" Offset="0.1"/>
-                        <GradientStop Color="YellowGreen" Offset="0.75"/>
-                        <GradientStop Color="Green" Offset="1"/>
-                    </LinearGradientBrush>
-                </Setter.Value>
-            </Setter>
+        <Style x:Key="EditButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource DefaultLineButtonStyle}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsInfoPopupOpened}" Value="True">
+                    <Setter Property="Background">
+                        <Setter.Value>
+                            <LinearGradientBrush StartPoint="0, 0" EndPoint="0,1">
+                                <GradientStop Color="LightGreen" Offset="0.0"/>
+                                <GradientStop Color="Green" Offset="0.1"/>
+                                <GradientStop Color="YellowGreen" Offset="0.75"/>
+                                <GradientStop Color="Green" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Setter.Value>
+                    </Setter>
+                </DataTrigger>
+            </Style.Triggers>
         </Style>
     </Grid.Resources>
 
@@ -137,7 +140,7 @@
         </Canvas>
     </ToggleButton>
 
-    <Button Grid.Column="1" Style="{StaticResource DefaultLineButton}" x:Name="copyButton"
+    <Button Grid.Column="1" Style="{StaticResource CopyButtonStyle}" x:Name="copyButton"
             Click="CopyToSystemClipboard"
             MouseRightButtonUp="OpenInfoPopupByCopyButton">
         <Grid>
@@ -177,7 +180,7 @@
         </Grid>
     </Button>
 
-    <Button Grid.Column="2" Style="{StaticResource DefaultLineButton}" x:Name="editButton"
+    <Button Grid.Column="2" Style="{StaticResource EditButtonStyle}" x:Name="editButton"
             Click="OpenInfoPopupByEditButton">
         <Canvas>
             <Line
@@ -199,7 +202,7 @@
         </Canvas>
     </Button>
 
-    <Button Grid.Column="3"  Style="{StaticResource DefaultLineButton}">
+    <Button Grid.Column="3"  Style="{StaticResource DefaultLineButtonStyle}">
         <Canvas HorizontalAlignment="Center" VerticalAlignment="Center">
             <Canvas.Resources>
                 <LinearGradientBrush x:Key="AddStrokeBrush">
@@ -219,7 +222,7 @@
         </Canvas>
     </Button>
 
-    <Button Grid.Column="4"  Style="{StaticResource DefaultLineButton}">
+    <Button Grid.Column="4"  Style="{StaticResource DefaultLineButtonStyle}">
         <Canvas HorizontalAlignment="Center" VerticalAlignment="Center">
             <Canvas.Resources>
                 <LinearGradientBrush x:Key="DeleteStrokeBrush">

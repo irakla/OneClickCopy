@@ -86,10 +86,10 @@
     </ApplicationDefinition>
     <Compile Include="OwnCopyData.cs" />
     <Compile Include="OwnCopyCollectionManager.cs" />
-    <Compile Include="OwnCopyLineListPanel.xaml.cs">
+    <Compile Include="OwnCopyLines\OwnCopyLineListPanel.xaml.cs">
       <DependentUpon>OwnCopyLineListPanel.xaml</DependentUpon>
     </Compile>
-    <Compile Include="OwnCopyLine\OwnCopyLineViewModel.cs" />
+    <Compile Include="OwnCopyLines\OwnCopyLineViewModel.cs" />
     <Compile Include="Properties\MessageResource.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -100,25 +100,25 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>UIResource.resx</DependentUpon>
     </Compile>
-    <Compile Include="OwnCopyLine\OwnCopyInfoPopup.xaml.cs">
+    <Compile Include="OwnCopyLines\OwnCopyInfoPopup.xaml.cs">
       <DependentUpon>OwnCopyInfoPopup.xaml</DependentUpon>
     </Compile>
-    <Compile Include="OwnCopyLine\OwnCopyLinePanel.xaml.cs">
+    <Compile Include="OwnCopyLines\OwnCopyLinePanel.xaml.cs">
       <DependentUpon>OwnCopyLinePanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainWindowSettingsController.cs" />
     <Compile Include="Templates\ToastNotifier.xaml.cs">
       <DependentUpon>ToastNotifier.xaml</DependentUpon>
     </Compile>
-    <Page Include="OwnCopyLineListPanel.xaml">
+    <Page Include="OwnCopyLines\OwnCopyLineListPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="OwnCopyLine\OwnCopyInfoPopup.xaml">
+    <Page Include="OwnCopyLines\OwnCopyInfoPopup.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="OwnCopyLine\OwnCopyLinePanel.xaml">
+    <Page Include="OwnCopyLines\OwnCopyLinePanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

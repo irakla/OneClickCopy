@@ -6,6 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:local="clr-namespace:OneClickCopy"
+        xmlns:copylines="clr-namespace:OneClickCopy.OwnCopyLines"
         mc:Ignorable="d"
         Title="OneClickCopy" Width="Auto"
         WindowStyle="None" AllowsTransparency="True" BorderBrush="Black" BorderThickness="2"
@@ -170,7 +171,7 @@
                     <RowDefinition Height="1*"/>
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0">
-                    <local:OwnCopyLineListPanel x:Name="ownCopyLineListPanel" ItemsSource="{Binding Path=OwnCopyCollection}"
+                    <copylines:OwnCopyLineListPanel x:Name="ownCopyLineListPanel" ItemsSource="{Binding Path=OwnCopyCollection}"
                                                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent"/>
 
                     <local:ToastNotifier x:Name="messageNotifier" Opacity="0"

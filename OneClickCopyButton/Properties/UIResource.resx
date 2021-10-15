@@ -123,7 +123,4 @@
   <data name="TextRightClickIsSaveCopy" xml:space="preserve">
     <value>우클릭 : 복사할 내용 저장</value>
   </data>
-  <data name="TextThisDataDoesntHaveTitleText" xml:space="preserve">
-    <value>이 데이터를 표현할 텍스트가 없습니다.</value>
-  </data>
 </root>

@@ -1,13 +1,9 @@
-﻿using OneClickCopy.OwnCopyLine;
-using System;
+﻿using System;
 using System.Diagnostics;
-using System.Resources;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Input;
 
-namespace OneClickCopy
+namespace OneClickCopy.OwnCopyLines
 {
     public partial class OwnCopyLinePanel : Grid
     {
@@ -27,16 +23,12 @@ namespace OneClickCopy
         }
 
         public void CopyToSystemClipboard(object sender, EventArgs e)
-            => _viewModel.CopyToSystemClipboardCommand.Execute(null);
+            => _viewModel.CopyOwnToSystemClipboardCommand.Execute(null);
 
-        public void OpenInfoPopupByCopyButton(object sender, MouseEventArgs mouseEvent)
-        {
-            Point nowCursorPosition = mouseEvent.GetPosition(Application.Current.MainWindow);
-            
-            _viewModel.OpenInfoPopupByCopyButtonCommand.Execute(nowCursorPosition);
-        }
+        public void OpenInfoPopupByCopyButton(object sender, EventArgs e)
+            => _viewModel.SaveCopyAndOpenInfoPopupCommand.Execute(null);
 
         public void OpenInfoPopupByEditButton(object sender, EventArgs e)
-            => _viewModel.OpenInfoPopupByEditButtonCommand.Execute(editButton);
+            => _viewModel.OpenInfoPopupOnUIElementCommand.Execute(editButton);
     }
 }

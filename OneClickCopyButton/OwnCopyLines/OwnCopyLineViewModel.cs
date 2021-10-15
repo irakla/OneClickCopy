@@ -1,14 +1,16 @@
 ﻿using Microsoft.Toolkit.Mvvm.Input;
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Resources;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 
-namespace OneClickCopy.OwnCopyLine
+namespace OneClickCopy.OwnCopyLines
 {
-    public class OwnCopyLineViewModel : DependencyObject
+    public class OwnCopyLineViewModel : DependencyObject, INotifyPropertyChanged
     {
         private OwnCopyData _ownCopyData = null;
 
@@ -16,9 +18,11 @@ namespace OneClickCopy.OwnCopyLine
             = DependencyProperty.Register(nameof(OwnCopyTitle), typeof(string), typeof(OwnCopyLineViewModel),
                 new PropertyMetadata(string.Empty));
 
-        private bool isEdittingOwnCopyContent = false;
         private OwnCopyInfoPopup lastOwnCopyInfoPopup = null;
 
+        public static readonly DependencyProperty IsInfoPopupOpenedProperty
+            = DependencyProperty.Register(nameof(IsInfoPopupOpened), typeof(bool), typeof(OwnCopyLineViewModel),
+                new PropertyMetadata(false));
         public static readonly DependencyProperty IsFixedTitleProperty
             = DependencyProperty.Register(nameof(IsFixedTitle), typeof(bool), typeof(OwnCopyLineViewModel),
                 new PropertyMetadata(false, OnTitleFixingButtonToggled));
@@ -26,34 +30,28 @@ namespace OneClickCopy.OwnCopyLine
         private ToastNotifier _messageNotifier = null;
         private ResourceManager messageResourceManager = new ResourceManager(typeof(OneClickCopy.Properties.MessageResource));
 
-        public event EventHandler PointedFromClipboard;
+        public event PropertyChangedEventHandler PropertyChanged;
 
-        public ICommand CopyToSystemClipboardCommand { get; }
-        public ICommand OpenInfoPopupByCopyButtonCommand { get; }
-        public ICommand OpenInfoPopupByEditButtonCommand { get; }
+        public ICommand CopyOwnToSystemClipboardCommand { get; }
+        public ICommand SaveCopyAndOpenInfoPopupCommand { get; }
+        public ICommand OpenInfoPopupOnUIElementCommand { get; }
+        public ICommand CloseInfoPopupCommand { get; }
+
+        public event EventHandler PointedFromClipboard;
 
         public bool HasOwnCopyContent
         { get => (OwnCopyContent != null) && (OwnCopyContent.GetFormats().Length != 0); }
 
-        public bool IsEditting
+        public bool HasTextData
         {
-            get => isEdittingOwnCopyContent;
-            set
-            {
-                isEdittingOwnCopyContent = value;
+            get => HasOwnCopyContent ?
+                    OwnCopyContent.GetFormats().Contains(DataFormats.Text) : false;
+        }
 
-                //move this part to XAML
-                /*if (isEdittingOwnCopyContent)
-                {
-                    editButton.Style = (Style)Resources["EdittingLineButton"];
-                }
-                else
-                {
-                    editButton.Style = (Style)Resources["DefaultLineButton"];
-                    if (lastOwnCopyInfoPopup != null)
-                        lastOwnCopyInfoPopup.IsOpen = false;
-                }*/
-            }
+        public bool IsInfoPopupOpened
+        {
+            get => (bool)GetValue(IsInfoPopupOpenedProperty);
+            set => SetValue(IsInfoPopupOpenedProperty, value);
         }
 
         public bool IsFixedTitle
@@ -71,23 +69,15 @@ namespace OneClickCopy.OwnCopyLine
         public DataObject OwnCopyContent
         {
             get => _ownCopyData.Content;
-            private set
-            {
-                _ownCopyData.Content = value;
-
-                //move this part to XAML
-                /*if (HasOwnCopyContent)
-                    copyButton.Style = (Style)Resources["HasOwnCopyStyle"];
-                else
-                    copyButton.Style = (Style)Resources["DefaultLineButton"];*/
-            }
+            private set => _ownCopyData.Content = value;
         }
 
         public OwnCopyLineViewModel(object ownCopyData)
         {
-            CopyToSystemClipboardCommand = new RelayCommand(CopyToSystemClipboard);
-            OpenInfoPopupByCopyButtonCommand = new RelayCommand<Point>(OpenInfoPopupByCopyButton);
-            OpenInfoPopupByEditButtonCommand = new RelayCommand<UIElement>(OpenInfoPopupByEditButton);
+            CopyOwnToSystemClipboardCommand = new RelayCommand(CopyOwnToSystemClipboard);
+            SaveCopyAndOpenInfoPopupCommand = new RelayCommand(SaveCopyAndOpenInfoPopup);
+            OpenInfoPopupOnUIElementCommand = new RelayCommand<UIElement>(OpenInfoPopupOnUIElement);
+            CloseInfoPopupCommand = new RelayCommand<bool?>(CloseInfoPopup);
 
             GetMainWindowElements();
             InitializeOwnCopyData(ownCopyData);
@@ -118,7 +108,7 @@ namespace OneClickCopy.OwnCopyLine
                 viewModel.NotifyTitleFixingButtonToggled((bool)e.NewValue);
         }
 
-        public void NotifyTitleFixingButtonToggled(bool toggledResult)
+        private void NotifyTitleFixingButtonToggled(bool toggledResult)
         {
             if (toggledResult)
             {
@@ -142,35 +132,24 @@ namespace OneClickCopy.OwnCopyLine
             }
         }
 
-        public void OpenInfoPopupByCopyButton(Point cursorPosition)
+        private void SaveCopyAndOpenInfoPopup()
         {
-            IsEditting = false;
-
-            Point nowCursorPosition = cursorPosition;
-
-            CopyFromSystemClipboard();
+            IsInfoPopupOpened = false;
+            SaveCopyFromSystemClipboard();
 
             if (HasOwnCopyContent)
             {
-                lastOwnCopyInfoPopup = new OwnCopyInfoPopup
-                {
-                    OwnCopyInfoPopupContent = OwnCopyContent
-                };
-
-                
-                /*if (IsFixedTitle)
-                    lastOwnCopyInfoPopup.titleTextBox.Text = ownCopyTitleText.Text;
-                else
-                    lastOwnCopyInfoPopup.SetTitleFromData();*/
+                lastOwnCopyInfoPopup = new OwnCopyInfoPopup(this);
 
                 SetCopyInfoPopupCommon();
+                OnPropertyChanged(nameof(HasOwnCopyContent));
             }
         }
 
-        private void CopyFromSystemClipboard()
+        private void SaveCopyFromSystemClipboard()
         {
-            bool BothCopiesAreEqual = HasOwnCopyContent && Clipboard.IsCurrent(OwnCopyContent);
-            if (BothCopiesAreEqual)
+            bool isEqualToOwnCopy = HasOwnCopyContent && Clipboard.IsCurrent(OwnCopyContent);
+            if (isEqualToOwnCopy)
             {
                 TryToLaunchThisMessage(messageResourceManager.GetString("CopyButtonIsExistingData"));
                 return;
@@ -219,42 +198,40 @@ namespace OneClickCopy.OwnCopyLine
             Clipboard.Clear();
             Clipboard.SetDataObject(OwnCopyContent);
 
+            if (!IsFixedTitle)
+                OwnCopyTitle = GetTitleFromOwnCopyContent();
+
             if (PointedFromClipboard != null)
                 PointedFromClipboard(this, EventArgs.Empty);
 
             TryToLaunchThisMessage(messageResourceManager.GetString("CopyButtonSavedNewData"));
         }
 
-        private void SetCopyInfoPopupCommon()
+        private string GetTitleFromOwnCopyContent()
         {
-            IsEditting = true;
+            string newTitleText = String.Empty;
 
-            if (lastOwnCopyInfoPopup != null)
+            if (HasTextData)
             {
-                BindTitleTextControls();
-                lastOwnCopyInfoPopup.Closed += ReportPopupClose;
+                string dataRawText = (string)OwnCopyContent.GetData(DataFormats.Text);
+                string[] splittedByNewLine = dataRawText.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);    
+
+                for (int nowContentLineCount = 0; nowContentLineCount < splittedByNewLine.Length; nowContentLineCount++)
+                {
+                    string nowContentLineText = splittedByNewLine[nowContentLineCount].Trim('\n');
+
+                    if (String.IsNullOrWhiteSpace(nowContentLineText))
+                        continue;
+
+                    newTitleText = nowContentLineText.Trim(new[] { ' ', '\t' });
+                    break;
+                }
             }
+
+            return newTitleText;
         }
 
-        private void BindTitleTextControls()
-        {
-            var ownCopyInfoPopupTitleBinding = new Binding("Text");
-            var bindingTitleTextBox = lastOwnCopyInfoPopup.titleTextBox;
-
-            ownCopyInfoPopupTitleBinding.Source = bindingTitleTextBox;
-            ownCopyInfoPopupTitleBinding.Mode = BindingMode.OneWay;
-            ownCopyInfoPopupTitleBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
-
-            BindingOperations.SetBinding(this, OwnCopyTitleProperty, ownCopyInfoPopupTitleBinding);
-        }
-
-        private void ReportPopupClose(object reporter, EventArgs e)
-        {
-            if (reporter == lastOwnCopyInfoPopup)
-                IsEditting = false;
-        }
-
-        public void CopyToSystemClipboard()
+        private void CopyOwnToSystemClipboard()
         {
             if (HasOwnCopyContent)
             {
@@ -270,7 +247,7 @@ namespace OneClickCopy.OwnCopyLine
                 TryToLaunchThisMessage(messageResourceManager.GetString("CopyButtonOwnCopyIsEmpty"));
         }
 
-        public void OpenInfoPopupByEditButton(UIElement editButton)
+        private void OpenInfoPopupOnUIElement(UIElement editButton)
         {
             if (!HasOwnCopyContent)
             {
@@ -278,18 +255,55 @@ namespace OneClickCopy.OwnCopyLine
                 return;
             }
 
-            IsEditting = false;
-            lastOwnCopyInfoPopup = new OwnCopyInfoPopup(editButton);
-            //lastOwnCopyInfoPopup.titleTextBox.Text = ownCopyTitleText.Text;
-            SetCopyInfoPopupCommon();
+            IsInfoPopupOpened = false;
 
-            if (HasOwnCopyContent)
-                lastOwnCopyInfoPopup.OwnCopyInfoPopupContent = OwnCopyContent;
+            if(editButton != null)
+                lastOwnCopyInfoPopup = new OwnCopyInfoPopup(this, editButton);
+            else
+                lastOwnCopyInfoPopup = new OwnCopyInfoPopup(this);
+
+            SetCopyInfoPopupCommon();
+        }
+
+        private void SetCopyInfoPopupCommon()
+        {
+            IsInfoPopupOpened = true;
+
+            if (lastOwnCopyInfoPopup != null)
+            {
+                lastOwnCopyInfoPopup.Closed += ReportPopupClose;
+            }
+        }
+
+        private void ReportPopupClose(object reporter, EventArgs e)
+        {
+            if (reporter == lastOwnCopyInfoPopup)
+                IsInfoPopupOpened = false;
+        }
+
+        public void CloseInfoPopup(bool? considerMousePosition)
+        {
+            if (lastOwnCopyInfoPopup == null)
+                return;
+
+            bool hasNoProblemAboutMousePosition =
+                considerMousePosition == null ?
+                true :
+                !(bool)considerMousePosition || !lastOwnCopyInfoPopup.IsMouseOver;
+
+            if (hasNoProblemAboutMousePosition)
+                lastOwnCopyInfoPopup.IsOpen = false;
         }
 
         private void TryToLaunchThisMessage(string message)
+            => _messageNotifier?.LaunchTheMessage(message);
+
+        protected void OnPropertyChanged(string propertyName)
         {
-            _messageNotifier?.LaunchTheMessage(message);
+            PropertyChangedEventHandler handler = PropertyChanged;
+
+            if (handler != null)
+                handler(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }
