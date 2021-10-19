@@ -8,7 +8,7 @@
        xmlns:resui="clr-namespace:OneClickCopy.Properties"
        mc:Ignorable="d"
        Width="Auto" MinWidth="100"
-       d:DataContext="copylines:OwnCopyLineViewModel"
+       d:DataContext="{d:DesignInstance Type=copylines:OwnCopyLineViewModel}"
        d:DesignHeight="450" d:DesignWidth="800">
     <Popup.Resources>
         <TextBox x:Key="TextContentPresenter"

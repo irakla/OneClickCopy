@@ -1,4 +1,5 @@
 ﻿using Microsoft.Toolkit.Mvvm.Input;
+using OneClickCopy.CustomType;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -30,14 +31,14 @@ namespace OneClickCopy.OwnCopyLines
         private ToastNotifier _messageNotifier = null;
         private ResourceManager messageResourceManager = new ResourceManager(typeof(OneClickCopy.Properties.MessageResource));
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
         public ICommand CopyOwnToSystemClipboardCommand { get; }
         public ICommand SaveCopyAndOpenInfoPopupCommand { get; }
         public ICommand OpenInfoPopupOnUIElementCommand { get; }
         public ICommand CloseInfoPopupCommand { get; }
 
-        public event EventHandler PointedFromClipboard;
+        public MutableExecuteCommand NotifyPointedFromClipboardCommand { get; }
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public bool HasOwnCopyContent
         { get => (OwnCopyContent != null) && (OwnCopyContent.GetFormats().Length != 0); }
@@ -60,6 +61,8 @@ namespace OneClickCopy.OwnCopyLines
             set => SetValue(IsFixedTitleProperty, value);
         }
 
+        public OwnCopyData OwnCopyData { get => _ownCopyData; }
+
         public string OwnCopyTitle
         {
             get => (string)GetValue(OwnCopyTitleProperty);
@@ -78,6 +81,8 @@ namespace OneClickCopy.OwnCopyLines
             SaveCopyAndOpenInfoPopupCommand = new RelayCommand(SaveCopyAndOpenInfoPopup);
             OpenInfoPopupOnUIElementCommand = new RelayCommand<UIElement>(OpenInfoPopupOnUIElement);
             CloseInfoPopupCommand = new RelayCommand<bool?>(CloseInfoPopup);
+
+            NotifyPointedFromClipboardCommand = new MutableExecuteCommand();
 
             GetMainWindowElements();
             InitializeOwnCopyData(ownCopyData);
@@ -102,9 +107,7 @@ namespace OneClickCopy.OwnCopyLines
 
         public static void OnTitleFixingButtonToggled(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            OwnCopyLineViewModel viewModel = sender as OwnCopyLineViewModel;
-
-            if (viewModel != null)
+            if (sender is OwnCopyLineViewModel viewModel)
                 viewModel.NotifyTitleFixingButtonToggled((bool)e.NewValue);
         }
 
@@ -163,7 +166,7 @@ namespace OneClickCopy.OwnCopyLines
                 return;
             }
 
-            DataObject newCopy = new DataObject();
+            DataObject cloneOfClipboardData = new DataObject();
 
             int skippedFormatCount = 0;
             foreach (string nowFormat in currentClipboardData.GetFormats())
@@ -173,15 +176,13 @@ namespace OneClickCopy.OwnCopyLines
 #if DEBUG
                     Debug.WriteLine("Copying Format : " + nowFormat);
 #endif
-
                     object nowCopyingData = currentClipboardData.GetData(nowFormat);
-
 #if DEBUG
                     Debug.WriteLine("Contents : " + nowCopyingData);
 #endif
 
                     if (nowCopyingData != null)
-                        newCopy.SetData(nowFormat, nowCopyingData);
+                        cloneOfClipboardData.SetData(nowFormat, nowCopyingData);
                 }
                 catch (System.Runtime.InteropServices.COMException comException)
                 {
@@ -191,18 +192,17 @@ namespace OneClickCopy.OwnCopyLines
                 }
             }
 
-            if (newCopy.GetFormats().Length == skippedFormatCount)
+            if (cloneOfClipboardData.GetFormats().Length == skippedFormatCount)
                 return;     //All format data is skipped so this copy doesn't contain anything.
 
-            OwnCopyContent = newCopy;
+            OwnCopyContent = cloneOfClipboardData;
             Clipboard.Clear();
             Clipboard.SetDataObject(OwnCopyContent);
 
             if (!IsFixedTitle)
                 OwnCopyTitle = GetTitleFromOwnCopyContent();
 
-            if (PointedFromClipboard != null)
-                PointedFromClipboard(this, EventArgs.Empty);
+            NotifyPointedFromClipboardCommand.Execute(null);
 
             TryToLaunchThisMessage(messageResourceManager.GetString("CopyButtonSavedNewData"));
         }
@@ -238,8 +238,7 @@ namespace OneClickCopy.OwnCopyLines
                 Clipboard.Clear();
                 Clipboard.SetDataObject(OwnCopyContent);
 
-                if (PointedFromClipboard != null)
-                    PointedFromClipboard(this, EventArgs.Empty);
+                NotifyPointedFromClipboardCommand.Execute(null);
 
                 TryToLaunchThisMessage(messageResourceManager.GetString("CopyButtonCopiedData"));
             }
@@ -281,7 +280,7 @@ namespace OneClickCopy.OwnCopyLines
                 IsInfoPopupOpened = false;
         }
 
-        public void CloseInfoPopup(bool? considerMousePosition)
+        private void CloseInfoPopup(bool? considerMousePosition)
         {
             if (lastOwnCopyInfoPopup == null)
                 return;

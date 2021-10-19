@@ -1,34 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using OneClickCopy.OwnCopyLines;
+using System;
 using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Reflection;
 using System.Resources;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace OneClickCopy
 {
     public partial class MainWindow : Window
     {
         private bool isPinnedTopmostButton = false;
-
-        private OwnCopyCollectionManager _ownCopyCollectionManager = new OwnCopyCollectionManager();
 
         private SettingsFileEntry settingsFileEntry;
         private MainWindowSettingsController mainWindowSettingsController;
@@ -39,11 +25,11 @@ namespace OneClickCopy
 
         private ResourceManager messageResourceManager = new ResourceManager(typeof(OneClickCopy.Properties.MessageResource));
 
+        public OwnCopyLineListViewModel OwnCopyLineListPanelViewModel 
+        { get => ownCopyLineListPanel.DataContext as OwnCopyLineListViewModel; }
+
         private bool IsReadyMainWindowSettingController
             => mainWindowSettingsController != null && mainWindowSettingsController.IsLoadedWindowSettings;
-
-        public ObservableCollection<OwnCopyData> OwnCopyCollection
-        { get => _ownCopyCollectionManager.OwnCopyCollection; }
 
         public Point NowPositionOnScreen
         {
@@ -404,11 +390,11 @@ namespace OneClickCopy
 
         private void MakePersistentCopy(object sender, EventArgs e)
         {
-            IDataObject latestCopy = _ownCopyCollectionManager.LatestCopyContent;
+            IDataObject latelyPointedCopyContent = OwnCopyLineListPanelViewModel?.LatelyPointedCopyContent;
 
-            if (latestCopy != null && Clipboard.IsCurrent(latestCopy))
+            if (latelyPointedCopyContent != null && Clipboard.IsCurrent(latelyPointedCopyContent))
             {
-                Clipboard.SetDataObject(latestCopy, true);
+                Clipboard.SetDataObject(latelyPointedCopyContent, true);
             }
         }
 

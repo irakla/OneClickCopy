@@ -14,11 +14,14 @@ namespace OneClickCopy.OwnCopyLines
         private Window currentMainWindow = Application.Current.MainWindow;
 
         public OwnCopyLineViewModel ViewModel { get => DataContext as OwnCopyLineViewModel; }
+
         public DataObject ShowingCopyDataContent { get => ViewModel?.OwnCopyContent; }
 
         public OwnCopyInfoPopup(object viewModel, UIElement placementTarget = null)
         {
-            DataContext = viewModel as OwnCopyLineViewModel;
+            //This viewModel is reused instance for existing ViewModel.
+            DataContext = viewModel;
+
             InitializeComponent();
 
             if (placementTarget == null)

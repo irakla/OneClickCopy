@@ -84,8 +84,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="CustomType\MutableExecuteCommand.cs" />
     <Compile Include="OwnCopyData.cs" />
-    <Compile Include="OwnCopyCollectionManager.cs" />
+    <Compile Include="OwnCopyLines\OwnCopyLineListViewModel.cs" />
     <Compile Include="OwnCopyLines\OwnCopyLineListPanel.xaml.cs">
       <DependentUpon>OwnCopyLineListPanel.xaml</DependentUpon>
     </Compile>
@@ -168,5 +169,6 @@
       <LastGenOutput>UIResource.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

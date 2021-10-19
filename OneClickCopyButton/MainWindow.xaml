@@ -171,8 +171,8 @@
                     <RowDefinition Height="1*"/>
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0">
-                    <copylines:OwnCopyLineListPanel x:Name="ownCopyLineListPanel" ItemsSource="{Binding Path=OwnCopyCollection}"
-                                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent"/>
+                    <copylines:OwnCopyLineListPanel x:Name="ownCopyLineListPanel"
+                                                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent"/>
 
                     <local:ToastNotifier x:Name="messageNotifier" Opacity="0"
                         Margin="15"  HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
