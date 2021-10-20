@@ -20,7 +20,7 @@ namespace OneClickCopy.OwnCopyLines
 
         public static readonly DependencyProperty OwnCopyTitleProperty
             = DependencyProperty.Register(nameof(OwnCopyTitle), typeof(string), typeof(OwnCopyLineViewModel),
-                new PropertyMetadata(string.Empty));
+                new PropertyMetadata(string.Empty, OnTitleChanged));
 
         private OwnCopyInfoPopup lastOwnCopyInfoPopup = null;
 
@@ -64,17 +64,7 @@ namespace OneClickCopy.OwnCopyLines
         public OwnCopyData OwnCopyData 
         {
             get => _ownCopyData;
-            set
-            {
-                if (value != null)
-                    _ownCopyData = value;
-                else
-                    _ownCopyData = new OwnCopyData();
-
-                OwnCopyTitle = _ownCopyData.Title;
-                OwnCopyContent = _ownCopyData.Content;
-                OnPropertyChanged(nameof(HasOwnCopyContent));
-            }
+            set => InitializeOwnCopyData(value);
         }
 
         public string OwnCopyTitle
@@ -111,6 +101,14 @@ namespace OneClickCopy.OwnCopyLines
                 _ownCopyData = new OwnCopyData();
 
             OwnCopyTitle = _ownCopyData.Title;
+            OwnCopyContent = _ownCopyData.Content;
+            OnPropertyChanged(nameof(HasOwnCopyContent));
+        }
+
+        public static void OnTitleChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (sender is OwnCopyLineViewModel viewModel)
+                viewModel.OwnCopyData.Title = (string)e.NewValue;
         }
 
         public static void OnTitleFixingButtonToggled(DependencyObject sender, DependencyPropertyChangedEventArgs e)

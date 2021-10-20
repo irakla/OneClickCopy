@@ -11,7 +11,7 @@ namespace OneClickCopy
     {
         private static string _defaultTitle = "Empty";
 
-        private string _title = _defaultTitle;
+        private string _title = new StringBuilder(_defaultTitle).ToString();
         private DataObject _content = null;
 
         public static string DefaultTitle
