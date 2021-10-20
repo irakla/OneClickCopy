@@ -9,12 +9,18 @@
              d:DesignHeight="450" d:DesignWidth="800"
               d:DataContext="{d:DesignInstance Type=copylines:OwnCopyLineListViewModel}"
              ItemsSource="{Binding OwnCopyCollection}"
-              copylines:OwnCopyLinePanel.PointedFromClipboard="OnNewCopyPointedFromClipboard">
+              
+              copylines:OwnCopyLinePanel.PointedFromClipboard="OnNewCopyPointedFromClipboard"
+              Button.Click="OnPanelInteractionButtonClicked">
     <ItemsControl.DataContext>
         <copylines:OwnCopyLineListViewModel/>
     </ItemsControl.DataContext>
     <ItemsControl.Style>
         <Style>
+            <Setter Property="copylines:OwnCopyLineListPanel.AddNewLineAtTheIndexCommand"
+                    Value="{Binding AddNewLineAtTheIndexCommand}"/>
+            <Setter Property="copylines:OwnCopyLineListPanel.RemoveLineAtTheIndexCommand"
+                    Value="{Binding RemoveLineAtTheIndexCommand}"/>
             <Setter Property="copylines:OwnCopyLineListPanel.SetLatelyPointedCopyDataCommand"
                     Value="{Binding SetLatelyPointedCopyDataCommand}"/>
         </Style>

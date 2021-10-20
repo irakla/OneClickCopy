@@ -220,7 +220,8 @@
             </Canvas>
         </Button>
 
-        <Button Grid.Column="3"  Style="{StaticResource DefaultLineButtonStyle}">
+        <Button Grid.Column="3" x:Name="addNewLineButton" DataContext=""
+                Style="{StaticResource DefaultLineButtonStyle}">
             <Canvas HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Canvas.Resources>
                     <LinearGradientBrush x:Key="AddStrokeBrush">
@@ -240,7 +241,8 @@
             </Canvas>
         </Button>
 
-        <Button Grid.Column="4"  Style="{StaticResource DefaultLineButtonStyle}">
+        <Button Grid.Column="4" x:Name="removeThisLineButton"
+                Style="{StaticResource DefaultLineButtonStyle}">
             <Canvas HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Canvas.Resources>
                     <LinearGradientBrush x:Key="DeleteStrokeBrush">

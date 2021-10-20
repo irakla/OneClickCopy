@@ -20,8 +20,25 @@ namespace OneClickCopy.OwnCopyLines
     {
         private const int IsNotContainedItemView = -1;
 
+        public static readonly DependencyProperty AddNewLineAtTheIndexCommandProperty =
+            DependencyProperty.Register("AddNewLineAtTheIndexCommand", typeof(ICommand), typeof(OwnCopyLineListPanel), new PropertyMetadata(null));
+        public static readonly DependencyProperty RemoveLineAtTheIndexCommandProperty =
+            DependencyProperty.Register("RemoveLineAtTheIndexCommand", typeof(ICommand), typeof(OwnCopyLineListPanel), new PropertyMetadata(null));
         public static readonly DependencyProperty SetLatelyPointedCopyDataCommandProperty =
             DependencyProperty.Register("SetLatelyPointedCopyDataCommand", typeof(ICommand), typeof(OwnCopyLineListPanel), new PropertyMetadata(null));
+
+
+        public ICommand AddNewLineAtTheIndexCommand
+        {
+            get { return (ICommand)GetValue(AddNewLineAtTheIndexCommandProperty); }
+            set { SetValue(AddNewLineAtTheIndexCommandProperty, value); }
+        }
+
+        public ICommand RemoveLineAtTheIndexCommand
+        {
+            get { return (ICommand)GetValue(RemoveLineAtTheIndexCommandProperty); }
+            set { SetValue(RemoveLineAtTheIndexCommandProperty, value); }
+        }
 
         public ICommand SetLatelyPointedCopyDataCommand
         {
@@ -34,17 +51,46 @@ namespace OneClickCopy.OwnCopyLines
             InitializeComponent();
         }
 
-        private void OnNewCopyPointedFromClipboard(object sender, RoutedEventArgs e)
+        private void OnPanelInteractionButtonClicked(object sender, RoutedEventArgs e)
         {
-            if (e.OriginalSource is UIElement eventRaisedView) {
-                int viewItemIndex = GetItemIndexOfTheView(eventRaisedView);
+            if(e.OriginalSource is FrameworkElement clickedButton)
+            {
+                int viewLineIndex = GetLineIndexOfTheView(clickedButton);
 
-                if(viewItemIndex != IsNotContainedItemView)
-                    SetLatelyPointedCopyDataCommand?.Execute(viewItemIndex);
+                if (viewLineIndex == IsNotContainedItemView)
+                    return;
+
+                switch (clickedButton.Name)
+                {
+                    case "addNewLineButton":
+                        AddNewLineAtTheIndexCommand?.Execute(viewLineIndex);
+                        break;
+                    case "removeThisLineButton":
+                        RemoveLineAtTheIndexCommand?.Execute(viewLineIndex);
+                        break;
+#if DEBUG
+                    default:
+                        Debug.WriteLine("This is not Panel Interaction Button Name : " + clickedButton.Name);
+                        break;
+#endif
+                }
             }
         }
 
-        private int GetItemIndexOfTheView(UIElement view)
+        private void OnNewCopyPointedFromClipboard(object sender, RoutedEventArgs e)
+        {
+            if (e.OriginalSource is UIElement eventRaisedView)
+            {
+                int viewLineIndex = GetLineIndexOfTheView(eventRaisedView);
+
+                if (viewLineIndex != IsNotContainedItemView)
+                    SetLatelyPointedCopyDataCommand?.Execute(viewLineIndex);
+            }
+
+            e.Handled = true;
+        }
+
+        private int GetLineIndexOfTheView(UIElement view)
         {
             //This code is based on the scenario
             //that ItemCollection element is ViewModel and the itemview has the ViewModel in its DataContext.
@@ -55,6 +101,29 @@ namespace OneClickCopy.OwnCopyLines
 
                 if (Items.Contains(dataContextOfTheView))
                     return Items.IndexOf(dataContextOfTheView);
+
+                else
+                {
+                    //Trace parent hierarchy and find a view that has LineViewModel in its DataContext.
+                    DependencyObject nowElement = fElement.Parent;
+
+                    while(!(nowElement is Window))
+                    {
+                        if (nowElement is FrameworkElement nowFElement &&
+                            Items.Contains(nowFElement.DataContext))
+                        {   //Line Index is found.
+                            return Items.IndexOf(nowFElement.DataContext);
+                        }
+                        else if (nowElement is FrameworkElement)
+                        {   //Line Index is not found. Trace parent.
+                            nowElement = ((FrameworkElement)nowElement).Parent;
+                            continue;
+                        }
+                        else
+                            //Can't trace parent hierarchy no more.
+                            return IsNotContainedItemView;
+                    }
+                }
             }
 
             return IsNotContainedItemView;

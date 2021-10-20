@@ -133,6 +133,24 @@ namespace OneClickCopy.Properties {
         }
         
         /// <summary>
+        ///   새로운 복사버튼 라인이 생성되었습니다.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string PlusButtonNewCopyLineIsAdded {
+            get {
+                return ResourceManager.GetString("PlusButtonNewCopyLineIsAdded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   {0}버튼 라인이 삭제되었습니다.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string RemoveButtonTitleLineIsRemoved_Formatted {
+            get {
+                return ResourceManager.GetString("RemoveButtonTitleLineIsRemoved_Formatted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   커서가 밖으로 나가면 창이 투명해집니다.과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string WindowCanBeTransparent {

@@ -13,6 +13,9 @@ namespace OneClickCopy.OwnCopyLines
 {
     public class OwnCopyLineViewModel : DependencyObject, INotifyPropertyChanged
     {
+        private ResourceManager messageResourceManager =
+            new ResourceManager(typeof(OneClickCopy.Properties.MessageResource));
+
         private OwnCopyData _ownCopyData = null;
 
         public static readonly DependencyProperty OwnCopyTitleProperty
@@ -27,9 +30,6 @@ namespace OneClickCopy.OwnCopyLines
         public static readonly DependencyProperty IsFixedTitleProperty
             = DependencyProperty.Register(nameof(IsFixedTitle), typeof(bool), typeof(OwnCopyLineViewModel),
                 new PropertyMetadata(false, OnTitleFixingButtonToggled));
-
-        private ToastNotifier _messageNotifier = null;
-        private ResourceManager messageResourceManager = new ResourceManager(typeof(OneClickCopy.Properties.MessageResource));
 
         public ICommand CopyOwnToSystemClipboardCommand { get; }
         public ICommand SaveCopyAndOpenInfoPopupCommand { get; }
@@ -61,7 +61,21 @@ namespace OneClickCopy.OwnCopyLines
             set => SetValue(IsFixedTitleProperty, value);
         }
 
-        public OwnCopyData OwnCopyData { get => _ownCopyData; }
+        public OwnCopyData OwnCopyData 
+        {
+            get => _ownCopyData;
+            set
+            {
+                if (value != null)
+                    _ownCopyData = value;
+                else
+                    _ownCopyData = new OwnCopyData();
+
+                OwnCopyTitle = _ownCopyData.Title;
+                OwnCopyContent = _ownCopyData.Content;
+                OnPropertyChanged(nameof(HasOwnCopyContent));
+            }
+        }
 
         public string OwnCopyTitle
         {
@@ -75,7 +89,9 @@ namespace OneClickCopy.OwnCopyLines
             private set => _ownCopyData.Content = value;
         }
 
-        public OwnCopyLineViewModel(object ownCopyData)
+        public OwnCopyLineViewModel() : this(null) { }
+
+        public OwnCopyLineViewModel(OwnCopyData ownCopyData)
         {
             CopyOwnToSystemClipboardCommand = new RelayCommand(CopyOwnToSystemClipboard);
             SaveCopyAndOpenInfoPopupCommand = new RelayCommand(SaveCopyAndOpenInfoPopup);
@@ -84,21 +100,13 @@ namespace OneClickCopy.OwnCopyLines
 
             NotifyPointedFromClipboardCommand = new MutableExecuteCommand();
 
-            GetMainWindowElements();
             InitializeOwnCopyData(ownCopyData);
         }
 
-        private void GetMainWindowElements()
+        private void InitializeOwnCopyData(OwnCopyData ownCopyData)
         {
-            MainWindow mainWindow = Application.Current.MainWindow as MainWindow;
-
-            _messageNotifier = mainWindow?.messageNotifier;
-        }
-
-        private void InitializeOwnCopyData(object ownCopyData)
-        {
-            if (ownCopyData != null && ownCopyData is OwnCopyData)
-                _ownCopyData = (OwnCopyData)ownCopyData;
+            if (ownCopyData != null)
+                _ownCopyData = ownCopyData;
             else
                 _ownCopyData = new OwnCopyData();
 
@@ -124,14 +132,14 @@ namespace OneClickCopy.OwnCopyLines
                     string.Format(formattedFixedMessage, nowTitle) :
                     string.Format(formattedFixedMessage, nowTitle.Substring(0, 10) + "..." + nowTitle.Substring(nowTitle.Length - 5));
 
-                TryToLaunchThisMessage(titleIsFixedString);
+                ToastNotifier.TryToLaunchMessage(titleIsFixedString);
             }
             else
             {
                 string titleIsUnfixedString
                     = messageResourceManager.GetString("CopyButtonTitleUnfixed");
 
-                TryToLaunchThisMessage(titleIsUnfixedString);
+                ToastNotifier.TryToLaunchMessage(titleIsUnfixedString);
             }
         }
 
@@ -154,7 +162,7 @@ namespace OneClickCopy.OwnCopyLines
             bool isEqualToOwnCopy = HasOwnCopyContent && Clipboard.IsCurrent(OwnCopyContent);
             if (isEqualToOwnCopy)
             {
-                TryToLaunchThisMessage(messageResourceManager.GetString("CopyButtonIsExistingData"));
+                ToastNotifier.TryToLaunchMessage(messageResourceManager.GetString("CopyButtonIsExistingData"));
                 return;
             }
 
@@ -162,7 +170,7 @@ namespace OneClickCopy.OwnCopyLines
 
             if (currentClipboardData.GetFormats().Length == 0)
             {
-                TryToLaunchThisMessage(messageResourceManager.GetString("CopyButtonClipboardIsEmpty"));
+                ToastNotifier.TryToLaunchMessage(messageResourceManager.GetString("CopyButtonClipboardIsEmpty"));
                 return;
             }
 
@@ -204,7 +212,7 @@ namespace OneClickCopy.OwnCopyLines
 
             NotifyPointedFromClipboardCommand.Execute(null);
 
-            TryToLaunchThisMessage(messageResourceManager.GetString("CopyButtonSavedNewData"));
+            ToastNotifier.TryToLaunchMessage(messageResourceManager.GetString("CopyButtonSavedNewData"));
         }
 
         private string GetTitleFromOwnCopyContent()
@@ -240,17 +248,17 @@ namespace OneClickCopy.OwnCopyLines
 
                 NotifyPointedFromClipboardCommand.Execute(null);
 
-                TryToLaunchThisMessage(messageResourceManager.GetString("CopyButtonCopiedData"));
+                ToastNotifier.TryToLaunchMessage(messageResourceManager.GetString("CopyButtonCopiedData"));
             }
             else
-                TryToLaunchThisMessage(messageResourceManager.GetString("CopyButtonOwnCopyIsEmpty"));
+                ToastNotifier.TryToLaunchMessage(messageResourceManager.GetString("CopyButtonOwnCopyIsEmpty"));
         }
 
         private void OpenInfoPopupOnUIElement(UIElement editButton)
         {
             if (!HasOwnCopyContent)
             {
-                TryToLaunchThisMessage(messageResourceManager.GetString("EditButtonOwnCopyDoesntExist"));
+                ToastNotifier.TryToLaunchMessage(messageResourceManager.GetString("EditButtonOwnCopyDoesntExist"));
                 return;
             }
 
@@ -293,9 +301,6 @@ namespace OneClickCopy.OwnCopyLines
             if (hasNoProblemAboutMousePosition)
                 lastOwnCopyInfoPopup.IsOpen = false;
         }
-
-        private void TryToLaunchThisMessage(string message)
-            => _messageNotifier?.LaunchTheMessage(message);
 
         protected void OnPropertyChanged(string propertyName)
         {

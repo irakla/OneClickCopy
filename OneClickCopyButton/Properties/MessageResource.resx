@@ -141,6 +141,12 @@
   <data name="EditButtonOwnCopyDoesntExist" xml:space="preserve">
     <value>저장된 내용이 없습니다.</value>
   </data>
+  <data name="PlusButtonNewCopyLineIsAdded" xml:space="preserve">
+    <value>새로운 복사버튼 라인이 생성되었습니다.</value>
+  </data>
+  <data name="RemoveButtonTitleLineIsRemoved_Formatted" xml:space="preserve">
+    <value>{0}버튼 라인이 삭제되었습니다.</value>
+  </data>
   <data name="WindowCanBeTransparent" xml:space="preserve">
     <value>커서가 밖으로 나가면 창이 투명해집니다.</value>
   </data>

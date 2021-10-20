@@ -21,26 +21,41 @@ namespace OneClickCopy
 {
     public partial class ToastNotifier : Border
     {
-        private int milliSecMessagePreserving = 3000;
+        private int messagePreservingMilliSec = 3000;
         private DispatcherTimer showTimer = new DispatcherTimer();
 
         private Storyboard nowPlayingStoryboard = null;
         
-        private bool isClickedCloseNotificationButton = false;
+        private bool isCloseNotificationButtonClicked = false;
 
-        private bool lockMessageLaunching = true;
+        private bool messageLaunchingLock = true;
 
-        public bool IsLocked { get => lockMessageLaunching; }
+        public bool IsLocked { get => messageLaunchingLock; }
 
         public ToastNotifier()
         {
             InitializeComponent();
 
-            showTimer.Interval = new TimeSpan(0, 0, 0, 0, milliSecMessagePreserving);
+            showTimer.Interval = new TimeSpan(0, 0, 0, 0, messagePreservingMilliSec);
             showTimer.Tick += new EventHandler(OutTheMessage);
         }
 
-        public void DisableLock() => lockMessageLaunching = false;
+        public static void TryToLaunchMessage(string message)
+        {
+            ToastNotifier messageNotifier = GetMessageNotifierFromMainWindow();
+
+            messageNotifier?.LaunchTheMessage(message);
+        }
+
+        public static ToastNotifier GetMessageNotifierFromMainWindow()
+        {
+            MainWindow mainWindow = Application.Current.MainWindow as MainWindow;
+
+            return mainWindow?.messageNotifier;
+        }
+
+        public void DisableLock() => messageLaunchingLock = false;
+        public void EnableLock() => messageLaunchingLock = true;
 
         public void LaunchTheMessage(string message)
         {
@@ -67,12 +82,12 @@ namespace OneClickCopy
                 nowPlayingStoryboard = null;
             }
 
-            isClickedCloseNotificationButton = false;
+            isCloseNotificationButtonClicked = false;
         }
 
         private void PreserveTheMessage(object sender, EventArgs e)
         {
-            if (isClickedCloseNotificationButton)
+            if (isCloseNotificationButtonClicked)
                 return;
 
             if (nowPlayingStoryboard != null)
@@ -92,11 +107,11 @@ namespace OneClickCopy
             if (showTimer.IsEnabled)
                 showTimer.Stop();
 
-            if (!isClickedCloseNotificationButton)
+            if (!isCloseNotificationButtonClicked)
                 FadeOut();
 
             if (sender == closeNotificationButton)
-                isClickedCloseNotificationButton = true;
+                isCloseNotificationButtonClicked = true;
         }
 
         private void FadeOut()
