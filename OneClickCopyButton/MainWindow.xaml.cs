@@ -215,26 +215,36 @@ namespace OneClickCopy
 
         private void SetWindowConstraintsWithElements(object sender, RoutedEventArgs e)
         {
-            if (ownCopyLineListPanel.Items.Count > 0 &&
-                ownCopyLineListPanel.Items[0] is FrameworkElement)
-            {
-                FrameworkElement firstLinePanel = (FrameworkElement)ownCopyLineListPanel.Items[0];
+            /* if (ownCopyLineListPanel.Items.Count > 0 &&
+                 ownCopyLineListPanel.Items[0] is FrameworkElement)
+             {
+                 FrameworkElement firstLinePanel = (FrameworkElement)ownCopyLineListPanel.Items[0];
 
-                double copyPanelMinWidth = firstLinePanel.MinWidth;
-                ownCopyLineListPanel.MinWidth = copyPanelMinWidth;
+                 double copyPanelMinWidth = firstLinePanel.MinWidth;
+                 ownCopyLineListPanel.MinWidth = copyPanelMinWidth;
 
-                double customTitleBarWidth = customTitleBar.ActualWidth;
+                 double customTitleBarWidth = customTitleBar.ActualWidth;
 
-                double resizeBorderWidth 
+                 double resizeBorderWidth 
+                     = nowWindowChrome.ResizeBorderThickness.Left + nowWindowChrome.ResizeBorderThickness.Right;
+                 double resizeBorderHeight
+                     = nowWindowChrome.ResizeBorderThickness.Top + nowWindowChrome.ResizeBorderThickness.Bottom;
+
+                 MinWidth = Math.Max(copyPanelMinWidth, customTitleBarWidth) + resizeBorderWidth;
+                 MinHeight = customTitleBar.ActualHeight + firstLinePanel.Height + resizeBorderHeight;
+
+                 SetWindowDragElementsVisibility();
+             }*/
+
+            double resizeBorderWidth
                     = nowWindowChrome.ResizeBorderThickness.Left + nowWindowChrome.ResizeBorderThickness.Right;
-                double resizeBorderHeight
-                    = nowWindowChrome.ResizeBorderThickness.Top + nowWindowChrome.ResizeBorderThickness.Bottom;
+            double resizeBorderHeight
+                = nowWindowChrome.ResizeBorderThickness.Top + nowWindowChrome.ResizeBorderThickness.Bottom;
 
-                MinWidth = Math.Max(copyPanelMinWidth, customTitleBarWidth) + resizeBorderWidth;
-                MinHeight = customTitleBar.ActualHeight + firstLinePanel.Height + resizeBorderHeight;
+            MinWidth = Math.Max(ownCopyLineListPanel.MinWidth, customTitleBar.ActualWidth) + resizeBorderWidth;
+            MinHeight = ownCopyLineListPanel.MinHeight + customTitleBar.ActualHeight + resizeBorderHeight;
 
-                SetWindowDragElementsVisibility();
-            }
+            SetWindowDragElementsVisibility();
         }
 
         private void SetWindowDragElementsVisibility()
