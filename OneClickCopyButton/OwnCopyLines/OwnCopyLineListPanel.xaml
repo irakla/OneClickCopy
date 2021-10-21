@@ -8,9 +8,9 @@
               mc:Ignorable="d" 
               
               MinWidth="200" MinHeight="70"
-             d:DesignHeight="450" d:DesignWidth="800"
+              d:DesignHeight="450" d:DesignWidth="800"
               d:DataContext="{d:DesignInstance Type=copylines:OwnCopyLineListViewModel}"
-             ItemsSource="{Binding OwnCopyCollection}"
+              ItemsSource="{Binding OwnCopyCollection}"
               
               copylines:OwnCopyLinePanel.PointedFromClipboard="OnNewCopyPointedFromClipboard"
               Button.Click="OnPanelInteractionButtonClicked">
@@ -18,13 +18,42 @@
         <copylines:OwnCopyLineListViewModel/>
     </ItemsControl.DataContext>
     <ItemsControl.Style>
-        <Style>
+        <Style TargetType="{x:Type ItemsControl}">
             <Setter Property="copylines:OwnCopyLineListPanel.AddNewLineAtTheIndexCommand"
                     Value="{Binding AddNewLineAtTheIndexCommand}"/>
             <Setter Property="copylines:OwnCopyLineListPanel.RemoveLineAtTheIndexCommand"
                     Value="{Binding RemoveLineAtTheIndexCommand}"/>
             <Setter Property="copylines:OwnCopyLineListPanel.SetLatelyPointedCopyDataCommand"
                     Value="{Binding SetLatelyPointedCopyDataCommand}"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ItemsControl}">
+                        <ScrollViewer x:Name="itemScrollViewer" VerticalScrollBarVisibility="Auto">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
+                                <ItemsPresenter Grid.Column="0"/>
+                                <Border Grid.Column="1" x:Name="scrollPlaceHolder"
+                                        Width="{x:Static SystemParameters.VerticalScrollBarWidth}">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ComputedVerticalScrollBarVisibility, ElementName=itemScrollViewer}"
+                                                             Value="Visible">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                </Border>
+                            </Grid>
+                        </ScrollViewer>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
     </ItemsControl.Style>
     

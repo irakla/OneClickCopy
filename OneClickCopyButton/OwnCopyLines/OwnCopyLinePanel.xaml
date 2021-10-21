@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:local="clr-namespace:OneClickCopy"
              xmlns:copylines="clr-namespace:OneClickCopy.OwnCopyLines"
              xmlns:resui="clr-namespace:OneClickCopy.Properties"
@@ -24,7 +25,7 @@
                     Value="{Binding NotifyPointedFromClipboardCommand}"/>
         </Style>
     </UserControl.Style>
-    
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="20"/>
@@ -220,7 +221,7 @@
             </Canvas>
         </Button>
 
-        <Button Grid.Column="3" x:Name="addNewLineButton" DataContext=""
+        <Button Grid.Column="3" x:Name="addNewLineButton"
                 Style="{StaticResource DefaultLineButtonStyle}">
             <Canvas HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Canvas.Resources>
